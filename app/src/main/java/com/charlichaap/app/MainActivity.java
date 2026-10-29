@@ -2,323 +2,444 @@ package com.charlichaap.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
 import android.text.InputType;
 import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
- * Charlie Chaap Android client.
- *
- * Two modes:
- *  - Connected: loads the customer site from the restaurant's LAN server
- *    (e.g. http://192.168.1.25:3000/customer), so orders are shared with
- *    every device on the same Wi-Fi.
- *  - Offline: if no server address is saved (or a bundled menu exists), the
- *    app opens the locally bundled menu page, which keeps the cart in the
- *    phone itself.
+ * Home screen: run the order desk on this phone, or connect to one running
+ * elsewhere on the same Wi-Fi.
  */
 public class MainActivity extends Activity {
 
-    private static final String PREFS = "charlichaap";
-    private static final String KEY_SERVER = "server_url";
-    private static final String ASSET_MENU = "index.html";
+    private static final String PREFS = ServerService.PREFS;
+    private static final String KEY_PASSWORD = ServerService.KEY_PASSWORD;
 
-    private WebView web;
-    private SharedPreferences prefs;
-    private boolean assetMenuAvailable;
+    private TextView statusText;
+    private TextView urlText;
+    private TextView hintText;
+    private Button startButton;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    private final Runnable refresher = new Runnable() {
+        @Override
+        public void run() {
+            refreshStatus();
+            handler.postDelayed(this, 2000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        assetMenuAvailable = assetExists(ASSET_MENU);
-
-        FrameLayout root = new FrameLayout(this);
-        web = new WebView(this);
-        root.addView(web, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        setContentView(root);
-
-        configureWebView();
-        loadInitial();
+        buildUi();
+        askForNotificationPermission();
     }
 
-    private void configureWebView() {
-        WebSettings s = web.getSettings();
-        s.setJavaScriptEnabled(true);
-        s.setDomStorageEnabled(true);
-        s.setDatabaseEnabled(true);
-        s.setAllowFileAccess(true);
-        s.setAllowContentAccess(true);
-        s.setLoadsImagesAutomatically(true);
-        s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        s.setCacheMode(WebSettings.LOAD_DEFAULT);
-        s.setUseWideViewPort(true);
-        s.setLoadWithOverviewMode(true);
-        s.setMediaPlaybackRequiresUserGesture(false);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshStatus();
+        handler.removeCallbacks(refresher);
+        handler.post(refresher);
+    }
 
-        try {
-            s.setAllowFileAccessFromFileURLs(true);
-            s.setAllowUniversalAccessFromFileURLs(true);
-        } catch (Throwable ignored) {
-            // Not available on every API level; the bundled page still works.
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(refresher);
+    }
 
-        CookieManager cookies = CookieManager.getInstance();
-        cookies.setAcceptCookie(true);
-        cookies.setAcceptThirdPartyCookies(web, true);
+    // ------------------------------------------------------------------ UI
 
-        web.setWebChromeClient(new WebChromeClient());
-        web.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                Uri uri = request.getUrl();
-                String scheme = uri.getScheme() == null ? "" : uri.getScheme();
-                if (scheme.equals("http") || scheme.equals("https") || scheme.equals("file")) {
-                    return false;
-                }
-                try {
-                    startActivity(new android.content.Intent(android.content.Intent.ACTION_VIEW, uri));
-                } catch (Exception ignored) {
-                }
-                return true;
-            }
+    private int dp(float value) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics());
+    }
 
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (request.isForMainFrame()) {
-                    showConnectionError();
+    private void buildUi() {
+        ScrollView scroll = new ScrollView(this);
+        scroll.setBackgroundColor(Color.parseColor("#FFFAF4"));
+
+        LinearLayout root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setPadding(dp(20), dp(24), dp(20), dp(32));
+        scroll.addView(root);
+
+        TextView title = new TextView(this);
+        title.setText("Charlie Chaap");
+        title.setTextSize(26);
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        title.setTextColor(Color.parseColor("#2B1A10"));
+        root.addView(title);
+
+        TextView subtitle = new TextView(this);
+        subtitle.setText("Order desk for your restaurant");
+        subtitle.setTextSize(14);
+        subtitle.setTextColor(Color.parseColor("#6B5646"));
+        subtitle.setPadding(0, dp(2), 0, dp(18));
+        root.addView(subtitle);
+
+        statusText = new TextView(this);
+        statusText.setTextSize(16);
+        statusText.setTypeface(Typeface.DEFAULT_BOLD);
+        statusText.setTextColor(Color.parseColor("#2B1A10"));
+        root.addView(statusText);
+
+        urlText = new TextView(this);
+        urlText.setTextSize(18);
+        urlText.setTypeface(Typeface.MONOSPACE);
+        urlText.setTextColor(Color.parseColor("#C2410C"));
+        urlText.setPadding(0, dp(6), 0, dp(6));
+        urlText.setTextIsSelectable(true);
+        root.addView(urlText);
+
+        hintText = new TextView(this);
+        hintText.setTextSize(13);
+        hintText.setTextColor(Color.parseColor("#6B5646"));
+        hintText.setPadding(0, 0, 0, dp(16));
+        root.addView(hintText);
+
+        startButton = primaryButton("Start order desk");
+        startButton.setOnClickListener(v -> {
+            if (ServerService.running) {
+                stopService(new Intent(this, ServerService.class).setAction(ServerService.ACTION_STOP));
+                toast("Order desk stopped");
+                handler.postDelayed(this::refreshStatus, 600);
+            } else {
+                if (!hasPassword()) {
+                    askPassword(this::startServer);
+                } else {
+                    startServer();
                 }
             }
         });
+        root.addView(startButton);
+
+        root.addView(gap(10));
+
+        LinearLayout shareRow = new LinearLayout(this);
+        shareRow.setOrientation(LinearLayout.HORIZONTAL);
+        Button share = secondaryButton("Share address");
+        share.setOnClickListener(v -> shareAddress());
+        Button copy = secondaryButton("Copy");
+        copy.setOnClickListener(v -> copyAddress());
+        LinearLayout.LayoutParams halfParams = new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        shareRow.addView(share, halfParams);
+        shareRow.addView(copy, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        root.addView(shareRow);
+
+        root.addView(gap(20));
+        root.addView(sectionTitle("Open on this phone"));
+        root.addView(actionButton("Customer menu", () -> openClient("/customer")));
+        root.addView(actionButton("Staff dashboard", () -> openClient("/staff")));
+        root.addView(actionButton("Owner controls", () -> openClient("/admin")));
+
+        root.addView(gap(20));
+        root.addView(sectionTitle("Settings"));
+        root.addView(actionButton("Staff password", this::askPassword));
+        root.addView(actionButton("Keep running in background", this::askBatteryExemption));
+        root.addView(actionButton("Start automatically after reboot", this::toggleAutoStart));
+        root.addView(actionButton("Connect to another order desk", this::askRemoteAddress));
+
+        root.addView(gap(20));
+        root.addView(sectionTitle("About"));
+        root.addView(actionButton("Version and help", this::showAbout));
+
+        setContentView(scroll);
     }
 
-    // ------------------------------------------------------------------ loading
+    private View gap(int height) {
+        View view = new View(this);
+        view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(height)));
+        return view;
+    }
 
-    private void loadInitial() {
-        String server = prefs.getString(KEY_SERVER, "");
-        if (server != null && !server.isEmpty()) {
-            web.loadUrl(server);
-        } else if (assetMenuAvailable) {
-            web.loadUrl("file:///android_asset/" + ASSET_MENU);
-            toast("Offline menu. Set the server address to share orders.");
+    private TextView sectionTitle(String text) {
+        TextView view = new TextView(this);
+        view.setText(text);
+        view.setTextSize(13);
+        view.setTypeface(Typeface.DEFAULT_BOLD);
+        view.setTextColor(Color.parseColor("#8A6F5C"));
+        view.setPadding(0, 0, 0, dp(6));
+        return view;
+    }
+
+    private Button primaryButton(String text) {
+        Button button = new Button(this);
+        button.setText(text);
+        button.setAllCaps(false);
+        button.setTextSize(16);
+        button.setTextColor(Color.WHITE);
+        button.setBackgroundColor(Color.parseColor("#C2410C"));
+        button.setPadding(dp(12), dp(14), dp(12), dp(14));
+        return button;
+    }
+
+    private Button secondaryButton(String text) {
+        Button button = new Button(this);
+        button.setText(text);
+        button.setAllCaps(false);
+        button.setTextSize(14);
+        button.setTextColor(Color.parseColor("#2B1A10"));
+        button.setBackgroundColor(Color.parseColor("#F2E6D8"));
+        return button;
+    }
+
+    private Button actionButton(String text, Runnable action) {
+        Button button = secondaryButton(text);
+        button.setGravity(android.view.Gravity.CENTER_VERTICAL | android.view.Gravity.START);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, dp(3), 0, dp(3));
+        button.setLayoutParams(params);
+        button.setOnClickListener(v -> action.run());
+        return button;
+    }
+
+    // ------------------------------------------------------------------ status
+
+    private void refreshStatus() {
+        if (statusText == null) return;
+        if (ServerService.running) {
+            String url = customerUrl();
+            statusText.setText("Order desk is running");
+            statusText.setTextColor(Color.parseColor("#166534"));
+            urlText.setText(url);
+            urlText.setVisibility(View.VISIBLE);
+            hintText.setText("Customers and staff join this phone's Wi-Fi or hotspot, then open this address. "
+                    + "Keep the phone on charge.");
+            startButton.setText("Stop order desk");
+            startButton.setBackgroundColor(Color.parseColor("#7F1D1D"));
         } else {
-            showSetupScreen();
+            statusText.setText("Order desk is stopped");
+            statusText.setTextColor(Color.parseColor("#7F1D1D"));
+            urlText.setVisibility(View.GONE);
+            String error = ServerService.lastError;
+            hintText.setText(error != null && !error.isEmpty()
+                    ? error
+                    : "Tap Start to let phones on your Wi-Fi open the menu and place orders.");
+            startButton.setText("Start order desk");
+            startButton.setBackgroundColor(Color.parseColor("#C2410C"));
         }
     }
 
-    private void showConnectionError() {
-        String server = prefs.getString(KEY_SERVER, "");
-        String html = "<html><head><meta name='viewport' content='width=device-width,initial-scale=1'>"
-                + "<style>body{font-family:sans-serif;padding:28px;color:#2b1a10;background:#fffaf4}"
-                + "h2{margin:0 0 10px}p{line-height:1.5;color:#5c4636}"
-                + "code{background:#f2e6d8;padding:2px 5px;border-radius:4px}"
-                + "a{display:inline-block;margin-top:18px;background:#c2410c;color:#fff;"
-                + "padding:12px 18px;border-radius:10px;text-decoration:none}</style></head><body>"
-                + "<h2>Can't reach the order desk</h2>"
-                + "<p>Tried <code>" + (server == null ? "" : server) + "</code></p>"
-                + "<p>Check that the server computer is switched on and running <code>npm start</code>, "
-                + "and that this phone is on the same Wi-Fi network.</p>"
-                + "<p>Tap the <b>&#8942;</b> menu and choose <b>Reload</b> once the server is up.</p>"
-                + "</body></html>";
-        web.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+    private String customerUrl() {
+        String ip = localAddress();
+        return "http://" + (ip == null ? "this-phone" : ip) + ":" + ServerService.PORT + "/customer";
     }
 
-    private void showSetupScreen() {
-        String html = "<html><head><meta name='viewport' content='width=device-width,initial-scale=1'>"
-                + "<style>body{font-family:sans-serif;padding:28px;color:#2b1a10;background:#fffaf4}"
-                + "h2{margin:0 0 10px}p{line-height:1.55;color:#5c4636}"
-                + "code{background:#f2e6d8;padding:2px 5px;border-radius:4px}</style></head><body>"
-                + "<h2>Welcome to Charlie Chaap</h2>"
-                + "<p>Open the <b>&#8942;</b> menu and choose <b>Server address</b> to connect this phone "
-                + "to the restaurant order desk, for example <code>http://192.168.1.25:3000</code>.</p>"
-                + "<p>The address is printed in the server terminal when you run <code>npm start</code>.</p>"
-                + "</body></html>";
-        web.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
-    }
-
-    // ------------------------------------------------------------------ menu
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 0, "Server address");
-        menu.add(0, 2, 1, "Reload");
-        if (assetMenuAvailable) {
-            menu.add(0, 3, 2, "Offline menu");
-        }
-        menu.add(0, 4, 3, "About");
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case 1:
-                askServerAddress();
-                return true;
-            case 2:
-                web.reload();
-                return true;
-            case 3:
-                web.loadUrl("file:///android_asset/" + ASSET_MENU);
-                return true;
-            case 4:
-                showAbout();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    private String localAddress() {
+        try {
+            List<String> candidates = new ArrayList<>();
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            for (NetworkInterface network : Collections.list(interfaces)) {
+                if (!network.isUp() || network.isLoopback()) continue;
+                for (InetAddress address : Collections.list(network.getInetAddresses())) {
+                    if (!(address instanceof Inet4Address) || address.isLoopbackAddress()) continue;
+                    String host = address.getHostAddress();
+                    if (host == null || host.startsWith("169.254.")) continue;
+                    candidates.add(host);
+                }
+            }
+            for (String prefix : new String[]{"192.168.43.", "192.168.", "10.", "172."}) {
+                for (String candidate : candidates) {
+                    if (candidate.startsWith(prefix)) return candidate;
+                }
+            }
+            return candidates.isEmpty() ? null : candidates.get(0);
+        } catch (Exception error) {
+            return null;
         }
     }
 
-    private void askServerAddress() {
+    // ------------------------------------------------------------------ actions
+
+    private void startServer() {
+        Intent intent = new Intent(this, ServerService.class).setAction(ServerService.ACTION_START);
+        if (Build.VERSION.SDK_INT >= 26) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
+        toast("Starting the order desk...");
+        handler.postDelayed(this::refreshStatus, 1500);
+    }
+
+    private void openClient(String path) {
+        if (!ServerService.running) {
+            toast("Start the order desk first");
+            return;
+        }
+        Intent intent = new Intent(this, ClientActivity.class);
+        intent.putExtra(ClientActivity.EXTRA_URL, "http://127.0.0.1:" + ServerService.PORT + path);
+        startActivity(intent);
+    }
+
+    private void askRemoteAddress() {
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
         input.setHint("http://192.168.1.25:3000");
-        String current = prefs.getString(KEY_SERVER, "");
-        if (current != null && !current.isEmpty()) {
-            input.setText(current);
-            input.setSelection(input.getText().length());
-        }
-
-        int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20,
-                getResources().getDisplayMetrics());
-        LinearLayout box = new LinearLayout(this);
-        box.setOrientation(LinearLayout.VERTICAL);
-        box.setPadding(pad, pad / 2, pad, 0);
-        TextView hint = new TextView(this);
-        hint.setText("Enter the LAN address of the order desk computer.");
-        hint.setTextColor(Color.DKGRAY);
-        hint.setPadding(0, 0, 0, pad / 2);
-        box.addView(hint);
-        box.addView(input, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         new AlertDialog.Builder(this)
-                .setTitle("Server address")
-                .setView(box)
-                .setPositiveButton("Connect", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface d, int which) {
-                        String url = normalise(input.getText().toString());
-                        if (url.isEmpty()) {
-                            toast("Enter a server address");
-                            return;
-                        }
-                        prefs.edit().putString(KEY_SERVER, url).apply();
-                        web.loadUrl(url);
+                .setTitle("Connect to another order desk")
+                .setMessage("Use this on staff phones that should open an order desk running on a different device.")
+                .setView(input)
+                .setPositiveButton("Open", (dialog, which) -> {
+                    String url = normaliseUrl(input.getText().toString());
+                    if (url == null) {
+                        toast("Enter a valid address");
+                        return;
                     }
-                })
-                .setNeutralButton("Offline menu", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface d, int which) {
-                        prefs.edit().remove(KEY_SERVER).apply();
-                        if (assetMenuAvailable) {
-                            web.loadUrl("file:///android_asset/" + ASSET_MENU);
-                        } else {
-                            showSetupScreen();
-                        }
-                    }
+                    Intent intent = new Intent(this, ClientActivity.class);
+                    intent.putExtra(ClientActivity.EXTRA_URL, url);
+                    startActivity(intent);
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    private String normaliseUrl(String raw) {
+        String value = raw == null ? "" : raw.trim();
+        if (value.isEmpty()) return null;
+        if (!value.startsWith("http://") && !value.startsWith("https://")) value = "http://" + value;
+        while (value.endsWith("/")) value = value.substring(0, value.length() - 1);
+        Uri uri = Uri.parse(value);
+        String path = uri.getPath();
+        if (path == null || path.isEmpty()) value = value + "/customer";
+        return value;
+    }
+
+    private boolean hasPassword() {
+        String password = getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, "");
+        return password != null && password.length() >= 12;
+    }
+
+    private void askPassword(Runnable onSaved) {
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setHint("At least 12 characters");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Staff password")
+                .setMessage("Staff use this to open the dashboard and change the menu. "
+                        + "Customers never see it. Write it down somewhere safe.")
+                .setView(input)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String value = input.getText().toString().trim();
+                    if (value.length() < 12) {
+                        toast("Use at least 12 characters");
+                        return;
+                    }
+                    getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_PASSWORD, value).apply();
+                    toast("Password saved");
+                    if (onSaved != null) onSaved.run();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void toggleAutoStart() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        boolean enabled = prefs.getBoolean("auto_start", false);
+        prefs.edit().putBoolean("auto_start", !enabled).apply();
+        toast(enabled ? "Automatic start turned off" : "Order desk will start after a reboot");
+    }
+
+    private void askBatteryExemption() {
+        try {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        } catch (Exception error) {
+            toast("Open Settings > Battery > App battery usage and allow background activity");
+        }
+    }
+
+    private void shareAddress() {
+        if (!ServerService.running) {
+            toast("Start the order desk first");
+            return;
+        }
+        String url = customerUrl();
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, "Charlie Chaap menu: " + url);
+        startActivity(Intent.createChooser(intent, "Share the menu address"));
+    }
+
+    private void copyAddress() {
+        if (!ServerService.running) {
+            toast("Start the order desk first");
+            return;
+        }
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(ClipData.newPlainText("Charlie Chaap", customerUrl()));
+            toast("Address copied");
+        }
     }
 
     private void showAbout() {
         String version = "1.0";
         long code = 0;
         try {
-            android.content.pm.PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
             version = info.versionName;
-            code = android.os.Build.VERSION.SDK_INT >= 28 ? info.getLongVersionCode() : info.versionCode;
+            code = Build.VERSION.SDK_INT >= 28 ? info.getLongVersionCode() : info.versionCode;
         } catch (Exception ignored) {
         }
         new AlertDialog.Builder(this)
-                .setTitle("Charlie Chaap")
-                .setMessage("Offline LAN menu & order desk\n\nVersion " + version + " (build " + code + ")\n\n"
-                        + "Install a newer APK over this one to update; orders and settings stay on the server.")
+                .setTitle("Charlie Chaap " + version)
+                .setMessage("Build " + code + "\n\n"
+                        + "This phone runs the whole order desk. Other phones on the same Wi-Fi or hotspot "
+                        + "open the address shown on the home screen.\n\n"
+                        + "Your menu, orders and settings stay on this phone. Install a newer APK over this "
+                        + "one to update; nothing is lost.\n\n"
+                        + "Tip: keep the phone on charge and allow background running.")
                 .setPositiveButton("OK", null)
                 .show();
     }
 
-    // ------------------------------------------------------------------ helpers
-
-    private static String normalise(String raw) {
-        String s = raw == null ? "" : raw.trim();
-        if (s.isEmpty()) return "";
-        if (!s.startsWith("http://") && !s.startsWith("https://")) {
-            s = "http://" + s;
-        }
-        while (s.endsWith("/")) {
-            s = s.substring(0, s.length() - 1);
-        }
-        Uri uri = Uri.parse(s);
-        String path = uri.getPath();
-        if (path == null || path.isEmpty()) {
-            s = s + "/customer";
-        }
-        return s;
-    }
-
-    private boolean assetExists(String name) {
-        try {
-            String[] list = getAssets().list("");
-            if (list == null) return false;
-            for (String entry : list) {
-                if (name.equals(entry)) return true;
+    private void askForNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            try {
+                requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, 41);
+            } catch (Exception ignored) {
             }
-            InputStream in = getAssets().open(name);
-            in.close();
-            return true;
-        } catch (IOException e) {
-            return false;
         }
     }
 
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (web != null && web.canGoBack()) {
-            web.goBack();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (web != null) web.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (web != null) web.onResume();
     }
 }

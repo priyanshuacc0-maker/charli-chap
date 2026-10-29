@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Charlie Chaap</string>
+    <string name="notification_channel">Order desk</string>
+    <string name="notification_channel_desc">Keeps the restaurant order desk running in the background.</string>
 </resources>
