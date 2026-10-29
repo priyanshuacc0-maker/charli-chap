@@ -38,6 +38,7 @@ jobs:
           else
             echo "No bundled web app found - the APK will be a thin client."
           fi
+          cp public/customer.html app/src/main/assets/customer.html
           cp data/menu.json app/src/main/assets/menu.json
           ls -l app/src/main/assets
 

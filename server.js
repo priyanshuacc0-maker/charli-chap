@@ -192,6 +192,10 @@ function sendJson(res, status, data, headers = {}) {
   });
   res.end(body);
 }
+function sendHtml(res, file) {
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin' });
+  fs.createReadStream(file).pipe(res);
+}
 function sendText(res, status, value) {
   res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
   res.end(value);
@@ -421,10 +425,12 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && pathname === '/') {
       res.writeHead(302, { Location: '/customer', 'Cache-Control': 'no-store' }); res.end(); return;
     }
-    if (req.method === 'GET' && ['/customer', '/customer/', '/staff', '/staff/', '/admin', '/admin/', '/index.html', '/Charlie_Chaap_Service_Ready.html'].includes(pathname)) {
-      const file = path.join(__dirname, 'public', 'index.html');
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin' });
-      fs.createReadStream(file).pipe(res); return;
+    if (req.method === 'GET' && ['/customer', '/customer/'].includes(pathname)) {
+      const customerPage = path.join(__dirname, 'public', 'customer.html');
+      return sendHtml(res, fs.existsSync(customerPage) ? customerPage : path.join(__dirname, 'public', 'index.html'));
+    }
+    if (req.method === 'GET' && ['/staff', '/staff/', '/admin', '/admin/', '/index.html', '/Charlie_Chaap_Service_Ready.html'].includes(pathname)) {
+      return sendHtml(res, path.join(__dirname, 'public', 'index.html'));
     }
     sendJson(res, 404, { error: 'Route not found.' });
   } catch (error) {

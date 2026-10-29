@@ -122,10 +122,12 @@ public class ServerService extends Service {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         boolean current = prefs.getInt("assets_version", -1) == versionCode
                 && new File(web, "index.html").exists()
+                && new File(web, "customer.html").exists()
                 && new File(web, "menu.json").exists();
         if (current) return;
 
         copyAsset("index.html", new File(web, "index.html"));
+        copyAsset("customer.html", new File(web, "customer.html"));
         copyAsset("menu.json", new File(web, "menu.json"));
         prefs.edit().putInt("assets_version", versionCode).apply();
     }

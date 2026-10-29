@@ -403,14 +403,24 @@ public class CharlieServer {
             return Response.redirect(302, extra);
         }
 
-        if ("GET".equals(method) && (pathname.equals("/customer") || pathname.equals("/customer/")
-                || pathname.equals("/staff") || pathname.equals("/staff/")
+        if ("GET".equals(method) && (pathname.equals("/customer") || pathname.equals("/customer/"))) {
+            return Response.file(customerFile());
+        }
+
+        if ("GET".equals(method) && (pathname.equals("/staff") || pathname.equals("/staff/")
                 || pathname.equals("/admin") || pathname.equals("/admin/")
                 || pathname.equals("/index.html") || pathname.equals("/Charlie_Chaap_Service_Ready.html"))) {
             return Response.file(indexFile);
         }
 
         throw new ApiException(404, "Route not found.");
+    }
+
+    /** The customer-facing page sits next to index.html; fall back to index.html if absent. */
+    private File customerFile() {
+        if (indexFile == null) return indexFile;
+        File candidate = new File(indexFile.getParentFile(), "customer.html");
+        return candidate.exists() ? candidate : indexFile;
     }
 
     private static String param(String query, String name) {
