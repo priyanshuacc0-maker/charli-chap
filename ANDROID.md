@@ -1,77 +1,84 @@
 # Charlie Chaap — Android app
 
-This folder now contains a native Android wrapper around the Charlie Chaap web app, built automatically by GitHub Actions.
+The app **is** the order desk. One Android phone runs the whole service: the menu website, the
+staff dashboard and the order API. Other phones on the same Wi-Fi or hotspot open the address the
+app shows. No computer, no internet, no cloud account.
 
-## What the app does
+## What is inside the APK
 
-The app has two modes:
+| Part | What it does |
+| --- | --- |
+| `ServerService` | Foreground service that keeps the HTTP server alive with the screen off |
+| `core/CharlieServer` | The HTTP + REST API server (plain Java, no dependencies) |
+| `core/Store` | Menu, order, config and backup rules — the same rules as `server.js` |
+| `MainActivity` | Start/stop, address, share, staff password, settings |
+| `ClientActivity` | WebView for the customer menu, staff dashboard and owner controls |
+| `BootReceiver` | Optional auto-start after the phone reboots |
+| `assets/index.html` | The whole web app, embedded (9.2 MB) |
+| `assets/menu.json` | Starter menu, copied into app storage on first run |
 
-1. **Connected (normal use).** You enter the LAN address of the order-desk computer, for example
-   `http://192.168.1.25:3000`, and the app opens the customer site served by that machine. Orders,
-   menu and statuses are shared with every phone and the staff dashboard on the same Wi-Fi.
-2. **Offline.** If no address is saved, the app opens the menu bundled inside the APK. The cart then
-   lives on that phone only — useful for showing the menu or taking a quick order when the server
-   is off.
+Data lives in the app's private storage (`files/data/state.json`) and survives updates.
 
-The app needs no internet permission beyond the local network, and no third-party libraries.
+## First run
 
-## Getting the APK
+1. Open the app, tap **Staff password**, and set one of at least 12 characters. Write it down.
+2. Turn on the phone's hotspot (or join the restaurant Wi-Fi).
+3. Tap **Start order desk**. The home screen shows an address such as
+   `http://192.168.43.1:3000/customer`.
+4. On any other phone joined to that hotspot, open that address.
+5. Tap **Keep running in background** once, and leave the phone on charge.
 
-Every push to `main` that touches the app builds a signed APK and publishes it as a GitHub Release:
+## Updates
 
-* Releases page: `https://github.com/priyanshuacc0-maker/charli-chap/releases`
-* Or run the workflow manually: **Actions → Android APK → Run workflow**.
+Every push that touches `app/` builds a signed APK and publishes it as a GitHub Release:
 
-## Updating over an older version
+* Releases: `https://github.com/priyanshuacc0-maker/charli-chap/releases`
+* Manual run: **Actions → Android APK → Run workflow**
 
-Updates work because:
+Install the new APK over the old one. That works because:
 
-* `applicationId` stays `com.charlichaap.app` — Android treats it as the same app.
-* Every build is signed with the **same keystore** (`KEYSTORE_BASE64` repository secret).
-* `versionCode` increases with every build: `1000 + GITHUB_RUN_NUMBER`.
+* `applicationId` stays `com.charlichaap.app`
+* every build is signed with the same keystore (`KEYSTORE_BASE64` secret)
+* `versionCode` rises with each build (`1000 + GITHUB_RUN_NUMBER`)
 
-So installing a newer APK over an older one is a normal update: Android replaces the app, keeps its
-data, and shows the new version in **⋮ → About**.
+Never replace the keystore once a build has shipped — Android would then refuse the update and
+require an uninstall, losing the orders on that phone.
 
-Never change the keystore once you have shipped a build — Android will refuse to install an APK
-signed with a different key over an existing one (you would have to uninstall first).
-
-## Repository secrets used by the build
+## Repository secrets
 
 | Secret | Purpose |
 | --- | --- |
-| `KEYSTORE_BASE64` | base64 of `cc-release.keystore` (PKCS12) |
+| `KEYSTORE_BASE64` | base64 of the PKCS12 keystore |
 | `KEYSTORE_PASSWORD` | keystore password |
 | `KEY_ALIAS` | `charlichaap` |
 | `KEY_PASSWORD` | key password |
 
-The keystore and its password are also included in the source zip you were given, in
-`signing/cc-release.keystore` and `signing/SIGNING.txt`. Keep that zip private — anyone with the
-keystore can sign an APK that Android will accept as an update to your app.
+A copy of the keystore and its passwords is in the source zip under `signing/`. Keep that private.
 
 ## Building locally
 
 ```bash
-export KEYSTORE_FILE=/absolute/path/cc-release.keystore
+export KEYSTORE_FILE=$PWD/signing/cc-release.keystore
 export KEYSTORE_PASSWORD='...' KEY_ALIAS=charlichaap KEY_PASSWORD='...'
-gradle :app:assembleRelease -PappVersionCode=1050 -PappVersionName=1.0.50
+gradle :app:assembleRelease -PappVersionCode=1100 -PappVersionName=1.0.100
 ```
 
-The APK lands in `app/build/outputs/apk/release/app-release.apk`. Pass a `versionCode` higher than
-the last published one, or Android will treat it as a downgrade.
+## Testing the server without a phone
+
+The server classes use no Android APIs, so the API can be exercised on a desktop JVM:
+
+```bash
+javac -cp json.jar -d out $(find app/src/main/java/com/charlichaap/app/core -name '*.java')
+java -cp out:json.jar <your harness>      # start CharlieServer on a port and hit the endpoints
+```
 
 ## Why `web/index.html.part-*` exists
 
-`public/index.html` is 9.2 MB, which is larger than a single GitHub API commit can carry. The file is
-therefore stored split into four byte-exact parts under `web/`. The workflow reassembles them with
-`cat` before building. If `public/index.html` is present (for example after you commit it from the
-web UI), the build uses that file and ignores the parts.
+`public/index.html` is 9.2 MB — larger than one GitHub API commit can carry — so it is stored split
+into four byte-exact parts. The workflow reassembles them into `app/src/main/assets/index.html`
+before building. If `public/index.html` is present, that file wins.
 
-## Source layout
+## The PC version
 
-```
-app/src/main/java/com/charlichaap/app/MainActivity.java   WebView client, setup dialog, version info
-app/src/main/AndroidManifest.xml                          permissions, cleartext HTTP for LAN
-app/src/main/res/mipmap-*/ic_launcher.png                 launcher icons
-.github/workflows/android.yml                             signed release build + GitHub Release
-```
+`server.js` in the repository root is the same service for a computer, for anyone who later wants a
+router plus a laptop. The two share the same API and the same `index.html`.
