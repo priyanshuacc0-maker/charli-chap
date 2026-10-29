@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 public class ClientActivity extends Activity {
 
     public static final String EXTRA_URL = "url";
+    public static final String EXTRA_TAB = "tab";
 
     private WebView web;
 
@@ -49,7 +50,16 @@ public class ClientActivity extends Activity {
 
         web.setBackgroundColor(Color.parseColor("#FFFAF4"));
         web.setWebChromeClient(new WebChromeClient());
+        final String tabName = getIntent() == null ? null : getIntent().getStringExtra(EXTRA_TAB);
         web.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if (tabName != null && tabName.matches("[a-z]+")) {
+                    view.evaluateJavascript("try{setTab('" + tabName + "');}catch(e){}", null);
+                }
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
