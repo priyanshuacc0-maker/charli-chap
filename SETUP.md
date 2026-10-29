@@ -14,7 +14,8 @@ No computer, no internet connection, no monthly fee.
 4. **Start it.** Tap *Start order desk*. The screen shows an address like
    `http://192.168.43.1:3000/customer`. Keep the phone plugged into a charger.
 5. **Add your menu.** Tap *Owner controls*, sign in with the staff password, and replace the sample
-   dishes with yours — name, half/full price, category, availability.
+   dishes with yours — name, half/full price, category, availability. The customer menu updates as
+   soon as you save.
 
 ## Every day
 

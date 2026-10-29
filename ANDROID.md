@@ -14,7 +14,8 @@ app shows. No computer, no internet, no cloud account.
 | `MainActivity` | Start/stop, address, share, staff password, settings |
 | `ClientActivity` | WebView for the customer menu, staff dashboard and owner controls |
 | `BootReceiver` | Optional auto-start after the phone reboots |
-| `assets/index.html` | The whole web app, embedded (9.2 MB) |
+| `assets/customer.html` | The customer menu, embedded (0.4 MB) — served at `/customer` |
+| `assets/index.html` | Staff dashboard and owner controls, embedded (9.2 MB) — served at `/staff` and `/admin` |
 | `assets/menu.json` | Starter menu, copied into app storage on first run |
 
 Data lives in the app's private storage (`files/data/state.json`) and survives updates.
