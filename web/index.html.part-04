@@ -613,7 +613,7 @@ function attachFoodImageFallback(img,name){img.addEventListener('error',()=>{if(
 function fallbackPhoto(name){const n=normalize(name);if(/momo/.test(n))return IMG.momo;if(/tikka/.test(n))return IMG.tikka;if(/malai chaap/.test(n))return IMG.malai;return IMG.chaap}
 function categoryFor(item){if(item.c==='Chaap Dry')return'Chaap';if(item.c==='Beverages')return'Drinks';if(item.c==='Momo')return'Momos';return item.c}
 function categoryMatches(item,cat){return cat==='All'||categoryFor(item)===cat}
-function setTab(tab,scroll=true){activeTab=tab;document.body.dataset.tab=tab;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===tab));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='orders'){renderComposer('home');renderOrders();}if(tab==='take'){renderComposer('take');renderTakeCart();}if(tab==='menu')renderMenu();if(tab==='history')renderHistory();if(tab==='more')renderMoreStats();renderDraftDock();if(scroll)window.scrollTo({top:0,behavior:'smooth'})}
+function setTab(tab,scroll=true){activeTab=tab;document.body.dataset.tab=tab;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===tab));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='orders'){renderComposer('home');renderOrders();}if(tab==='take'){renderComposer('take');renderTakeCart();}if(tab==='menu'){renderMenu();if(window.__ccShared){fetch('/api/menu'+(window.__ccStaff?'?all=1':''),{credentials:'same-origin',cache:'no-store'}).then(r=>r.json()).then(d=>{if(d&&Array.isArray(d.items)&&d.items.length){const fresh=d.items.map(it=>({n:String(it.n||''),c:String(it.c||'Other'),h:it.h==null?null:Number(it.h),f:it.f==null?null:Number(it.f),hLabel:it.hLabel||'',fLabel:it.fLabel||'',a:Array.isArray(it.a)?it.a:[],available:it.available!==false,custom:!!it.custom,image:it.image||''})).filter(x=>x.n);menu.splice(0,menu.length,...fresh);try{renderMenu();}catch(_){}try{refreshMenuViews();}catch(_){}}}).catch(()=>{})}}if(tab==='history')renderHistory();if(tab==='more')renderMoreStats();renderDraftDock();if(scroll)window.scrollTo({top:0,behavior:'smooth'})}
 function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove('show'),1900)}
 function getOrderTime(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
 function nextOrderId(){return orders.reduce((m,o)=>Math.max(m,Number(o.id)||0),0)+1}
@@ -1752,8 +1752,21 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
       BACKUP_KEYS.forEach(key=>{try{if(Object.prototype.hasOwnProperty.call(data.storage,key))localStorage.setItem(key,data.storage[key]);else localStorage.removeItem(key)}catch(_){}});alert('Backup restored. The app will reload to apply all saved menu and order data.');location.reload();
     }catch(_){showServiceToast('That backup file is invalid or unsupported')}};reader.onerror=()=>showServiceToast('Could not read the backup file');reader.readAsText(file);
   }
-  function copyCustomerLink(){const url=new URL(location.href);url.searchParams.set('mode','customer');const link=url.toString();if(location.protocol==='file:'){showServiceToast('Host this HTML on HTTPS first; a file:// link cannot be shared with customers');return}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(link).then(()=>showServiceToast('Customer link copied')).catch(()=>prompt('Copy this customer link:',link))}else prompt('Copy this customer link:',link)}
-  function applyServiceSettingsToUI(){if($s('serviceTaxRate'))$s('serviceTaxRate').value=Number(serviceConfig.taxPercent)||0;if($s('serviceDeliveryFee'))$s('serviceDeliveryFee').value=Number(serviceConfig.deliveryFee)||0;updateCustomerOpenState()}
+  function copyCustomerLink(){
+  if(location.protocol==='file:'){showServiceToast('Host this HTML on the server first; a file:// link cannot be shared with customers');return}
+  const finish=(link)=>{
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(link).then(()=>showServiceToast('Customer link copied')).catch(()=>prompt('Copy this customer link:',link))}
+    else prompt('Copy this customer link:',link);
+  };
+  let link=new URL('/customer', location.origin).toString();
+  fetch('/api/health',{cache:'no-store'}).then(r=>r.json()).then(h=>{
+    const ip=Array.isArray(h.addresses)&&h.addresses.length?h.addresses[0]:null;
+    const port=h.port||location.port||'3000';
+    if(ip) link='http://'+ip+':'+port+'/customer';
+    finish(link);
+  }).catch(()=>finish(link));
+}
+function applyServiceSettingsToUI(){if($s('serviceTaxRate'))$s('serviceTaxRate').value=Number(serviceConfig.taxPercent)||0;if($s('serviceDeliveryFee'))$s('serviceDeliveryFee').value=Number(serviceConfig.deliveryFee)||0;updateCustomerOpenState()}
 
   // Shared backend mode: activated automatically when served by the included Node.js server.
   async function apiFetch(path,options={}){
