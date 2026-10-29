@@ -312,6 +312,11 @@ button{touch-action:manipulation}
   border-radius:11px;padding:9px 11px;font-size:12px;font-weight:800;margin-right:8px;color:var(--service-ink,#111)}
 @media (max-width:360px){#menuList.cc-cards{gap:9px}.cc-card-name{font-size:12px}}
 </style>
+
+<style id="cc-cleanup">
+#serviceAuthDescription{display:none}
+.rs-status{display:none}
+</style>
 </head>
 <body data-tab="orders">
 <div id="app" class="app">
@@ -511,9 +516,9 @@ button{touch-action:manipulation}
           <label><span>Tax / GST (%)</span><input id="serviceTaxRate" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="0"></label>
           <label><span>Delivery fee (₹)</span><input id="serviceDeliveryFee" type="number" inputmode="decimal" min="0" max="100000" step="1" value="0"></label>
         </div>
-        <p class="rs-help">Keep tax at 0% unless the rate has been confirmed for your business. Delivery fee is added only to delivery orders.</p>
+        <p class="rs-help">Tax applies to all orders. Delivery fee only to delivery orders.</p>
 
-        <div class="service-connection-note"><span class="service-connection-dot"></span><div><strong>Single-browser storage</strong><p>Orders and menu changes save in this browser. Public multi-device ordering requires a shared database and staff authentication before launch.</p></div></div>
+        <div class="service-connection-note"><span class="service-connection-dot"></span><div><strong>Shared with every phone on this Wi-Fi</strong><p id="ccConnNote">Orders and menu changes sync through the order-desk phone.</p></div></div>
       </section>
     <div class="more-grid">
       <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></div><div class="setting-text"><strong>Dark mode</strong></div><button class="switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="Dark mode"><i></i></button></div>
@@ -1356,7 +1361,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
     <div class="editor-field"><label for="menuEditorCategory">Category</label><input id="menuEditorCategory" class="editor-input" maxlength="50" required list="menuEditorCategoryOptions" placeholder="e.g. Chaap Dry"><datalist id="menuEditorCategoryOptions"></datalist></div>
     <div class="editor-price-grid"><div class="editor-field"><label for="menuEditorHalf">Half price (₹)</label><input id="menuEditorHalf" class="editor-input" type="number" min="0" max="1000000" step="0.5" placeholder="Optional"></div><div class="editor-field"><label for="menuEditorFull">Full price (₹)</label><input id="menuEditorFull" class="editor-input" type="number" min="0" max="1000000" step="0.5" placeholder="Optional"></div></div>
     <div class="editor-field"><label for="menuEditorDesc">Description (shown to customers)</label><input id="menuEditorDesc" class="editor-input" maxlength="120" placeholder="Creamy &amp; flavourful"></div> <div class="editor-field"><label for="menuEditorAliases">Search names / spelling variations</label><textarea id="menuEditorAliases" class="editor-textarea" placeholder="Separate aliases with commas"></textarea></div>
-    <p class="editor-help">Enter at least one valid price. Leave the image blank to use the app's matching default food photo. Saved menu changes apply to future orders; past orders retain their recorded name and price.</p>
+    <p class="editor-help">At least one price is required. Leave the image blank for a default photo.</p>
     <div class="editor-form-actions"><button class="editor-cancel-btn" id="menuEditorCancel" type="button">Cancel</button><button class="editor-save-btn" id="menuEditorSave" type="submit">Save changes</button></div>
     <div class="editor-form-footer"><span class="editor-help" id="menuEditorItemKind">Menu item</span><button class="editor-delete-btn" id="menuEditorDelete" type="button" hidden>Delete item</button></div>
   </form>
@@ -1862,7 +1867,7 @@ function applyServiceSettingsToUI(){if($s('serviceTaxRate'))$s('serviceTaxRate')
   function updateStaffAuthUI(){window.__ccStaff=!!staffAuthenticated;
     const password=$s('serviceAdminPassword'),login=$s('serviceStaffLogin'),logout=$s('serviceStaffLogout'),publish=$s('servicePublishMenu');
     const note=document.querySelector('.service-connection-note');
-    if(note){const heading=note.querySelector('strong'),paragraph=note.querySelector('p');if(!sharedServiceActive){if(heading)heading.textContent='Single-browser storage';if(paragraph)paragraph.textContent='Orders and menu changes save in this browser. Public multi-device ordering needs the included shared service server.'}else{if(heading)heading.textContent='Shared server storage';if(paragraph)paragraph.textContent='Orders, menu and service settings sync through the shared server. Use persistent hosting storage and export regular backups.'}}
+    if(note){const heading=note.querySelector('strong'),paragraph=note.querySelector('p');if(!sharedServiceActive){if(heading)heading.textContent='Not connected to the order desk';if(paragraph)paragraph.textContent='Start the order desk on this phone to share orders with other devices.'}else{if(heading)heading.textContent='Shared with every phone on this Wi-Fi';if(paragraph)paragraph.textContent='Orders and menu changes sync through the order-desk phone.'}}
     if(!sharedServiceActive){setConnectionLabel('Local preview mode','This file is not connected to a server. Orders stay in the current browser; use the included server package for shared customer orders.','offline');if(login)login.hidden=true;if(password)password.parentElement.hidden=true;if(logout)logout.hidden=true;if(publish)publish.disabled=true;return}
     if(login)login.hidden=staffAuthenticated;if(password)password.parentElement.hidden=staffAuthenticated;if(logout)logout.hidden=!staffAuthenticated;if(publish)publish.disabled=!staffAuthenticated;
     if(staffAuthenticated)setConnectionLabel('Shared service connected · Staff signed in','Customer orders and service settings are syncing with the hosted server.','connected');
