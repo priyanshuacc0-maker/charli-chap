@@ -276,6 +276,19 @@ button{touch-action:manipulation}
   .rs-staff{flex-wrap:wrap}
 }
 </style>
+
+<style id="cc-new-order-style">
+#ccNewOrderBanner{position:fixed;left:12px;right:12px;top:12px;z-index:9999;display:flex;gap:10px;align-items:center;
+  background:#111114;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 34px rgba(17,17,20,.35);
+  transform:translateY(-200%);transition:transform .3s cubic-bezier(.2,.8,.2,1);cursor:pointer}
+#ccNewOrderBanner.on{transform:translateY(0)}
+#ccNewOrderBanner .cc-nob-dot{width:10px;height:10px;border-radius:50%;background:#F2B23E;
+  box-shadow:0 0 0 4px rgba(242,178,62,.25);flex:0 0 auto;animation:ccNobPulse 1.4s ease-in-out infinite}
+@keyframes ccNobPulse{0%,100%{opacity:1}50%{opacity:.4}}
+#ccNewOrderBanner .cc-nob-text{min-width:0}
+#ccNewOrderBanner strong{display:block;font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ccNewOrderBanner small{display:block;font-size:11.5px;color:#B9B9C4;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
 </head>
 <body data-tab="orders">
 <div id="app" class="app">
@@ -634,7 +647,7 @@ function orderStatus(o){return 'placed'}
 function statusPill(status){const b=document.createElement('span');b.className='status pending';b.textContent='Placed';return b}
 function orderMatchesFilter(o,filter){return true}
 function orderMatchesSearch(o,q){if(!q)return true;return String(o.id).includes(q)||normalize(o.items.map(i=>i.name).join(' ')).includes(normalize(q))}
-function renderOrderList(hostId,filter,search=''){const host=$(hostId);host.innerHTML='';let visible=orders.filter(o=>orderMatchesFilter(o,filter)&&orderMatchesSearch(o,search)).slice().reverse();if(!visible.length){const empty=document.createElement('div');empty.className='order-empty';empty.innerHTML='<div class="empty-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></div><strong>'+(search?'No matching orders':'No orders yet')+'</strong><p>'+(search?'Try a different order number or dish.':'New orders will appear here.')+'</p>';if(filter!=='done'){const btn=document.createElement('button');btn.className='black-btn';btn.textContent='+ Add order';btn.onclick=()=>openQuickDialog();empty.append(btn)}host.append(empty);return}visible.forEach(o=>host.append(renderOrderCard(o)))}
+function renderOrderList(hostId,filter,search=''){const host=$(hostId);host.innerHTML='';const ccHistory=hostId==='historyList';let visible=orders.filter(o=>{const st=(typeof orderStatus==='function')?orderStatus(o):'pending';if(!ccHistory&&(st==='done'||st==='cancelled'))return false;return orderMatchesFilter(o,filter)&&orderMatchesSearch(o,search)}).sort((a,b)=>Number(b.id)-Number(a.id));if(!visible.length){const empty=document.createElement('div');empty.className='order-empty';empty.innerHTML='<div class="empty-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></div><strong>'+(search?'No matching orders':'No orders yet')+'</strong><p>'+(search?'Try a different order number or dish.':'New orders will appear here.')+'</p>';if(filter!=='done'){const btn=document.createElement('button');btn.className='black-btn';btn.textContent='+ Add order';btn.onclick=()=>openQuickDialog();empty.append(btn)}host.append(empty);return}visible.forEach(o=>host.append(renderOrderCard(o)))}
 function renderOrderCard(o){const card=document.createElement('article');card.className='order-card';card.tabIndex=0;card.setAttribute('aria-label','Open order '+o.id);card.onclick=()=>openOrderDetail(o.id);card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openOrderDetail(o.id)}};const head=document.createElement('div');head.className='order-head';const meta=document.createElement('div');meta.className='order-meta';const num=document.createElement('div');num.className='order-number';num.textContent='ORDER #'+o.id;const count=document.createElement('div');count.className='order-count';count.textContent=o.items.length+' item'+(o.items.length===1?'':'s')+' · '+(o.time||'');const statusline=document.createElement('div');statusline.style.marginTop='6px';statusline.append(statusPill(orderStatus(o)));meta.append(num,count,statusline);const total=document.createElement('div');total.className='order-total';total.textContent=fmt(o.total);head.append(meta,total);card.append(head);const lines=document.createElement('div');lines.className='item-lines';o.items.slice(0,5).forEach(i=>{const row=document.createElement('div');row.className='item-line';const img=document.createElement('img');img.className='item-thumb';img.src=photoFor(i.name);img.onerror=()=>{img.onerror=null;img.src=fallbackPhoto(i.name)};img.alt='';const info=document.createElement('div');info.className='item-line-info';const name=document.createElement('div');name.className='item-line-name';name.textContent=i.name;const det=document.createElement('div');det.className='item-line-detail';det.textContent=i.qty+' × '+(i.sizeLabel||(i.size==='f'?'Full':'Half'))+' · '+fmt(i.rate)+' each';info.append(name,det);const amount=document.createElement('div');amount.className='item-line-total';amount.textContent=fmt(i.qty*i.rate);row.append(img,info,amount);lines.append(row)});if(o.items.length>5){const more=document.createElement('div');more.className='item-line-detail';more.style.padding='6px 2px';more.textContent='+'+(o.items.length-5)+' more items';lines.append(more)}card.append(lines);const actions=document.createElement('div');actions.className='order-actions';const action=document.createElement('button');action.className='action-main';action.type='button';action.textContent='View order';action.onclick=e=>{e.stopPropagation();openOrderDetail(o.id)};const more=document.createElement('button');more.className='action-more';more.type='button';more.textContent='···';more.setAttribute('aria-label','Order details');more.onclick=e=>{e.stopPropagation();openOrderDetail(o.id)};actions.append(action,more);card.append(actions);return card}
 function renderOrders(){$('activeCount').textContent=orders.length+' Orders';$('activeCount').className='status pending';renderOrderList('homeOrderList','all',$('orderSearch').value||'')}
 function advanceStatus(id){const o=orders.find(o=>String(o.id)===String(id));if(!o)return;const st=orderStatus(o);o.status=st==='pending'?'preparing':st==='preparing'?'done':'pending';o.done=o.status==='done';recalcOrder(o);saveOrders();renderOrders();renderHistory();renderMoreStats();if(detailOrderId===o.id)renderOrderDetail();showToast(o.status==='done'?'Order completed':o.status==='preparing'?'Order is preparing':'Order reopened')}
@@ -1793,10 +1806,31 @@ function applyServiceSettingsToUI(){if($s('serviceTaxRate'))$s('serviceTaxRate')
     try{if(admin&&window.ccMenuManagement){remote.forEach(item=>{if(window.ccMenuManagement.isAvailable(item)!==(item.available!==false))window.ccMenuManagement.setMenuAvailability(item.n,item.available!==false)});window.ccMenuManagement.refreshMenuViews()}}catch(_){}
     try{renderMenu()}catch(_){}try{renderEditor()}catch(_){}renderCustomerCategories();renderCustomerMenu();
   }
-  async function pullRemoteOrders(silent=false){
+  function ccNotifyNewOrder(list){
+  const first=list[0]||{};
+  let wrap=document.getElementById('ccNewOrderBanner');
+  if(!wrap){wrap=document.createElement('div');wrap.id='ccNewOrderBanner';document.body.appendChild(wrap);}
+  const title=list.length>1?('New orders: '+list.length+' — latest #'+first.id):('New order #'+first.id+(first.tableNumber?(' · Table '+first.tableNumber):''));
+  const qty=Array.isArray(first.items)?first.items.reduce((n,i)=>n+(Number(i.qty)||1),0):0;
+  const sub=(qty?(qty+' item'+(qty===1?'':'s')+' · '):'')+(first.total!=null?((typeof fmt==='function')?fmt(first.total):'₹'+first.total):'');
+  wrap.innerHTML='<span class="cc-nob-dot"></span><div class="cc-nob-text"><strong></strong><small></small></div>';
+  wrap.querySelector('strong').textContent=title;
+  wrap.querySelector('small').textContent=sub;
+  wrap.classList.add('on');
+  wrap.onclick=()=>{try{openOrderDetail(first.id);wrap.classList.remove('on')}catch(_){}};
+  clearTimeout(window.__ccNobTimer);
+  window.__ccNobTimer=setTimeout(()=>wrap.classList.remove('on'),9000);
+  try{if(navigator.vibrate)navigator.vibrate(120)}catch(_){}
+}
+async function pullRemoteOrders(silent=false){
     if(!sharedServiceActive||!staffAuthenticated)return;
     const result=await apiFetch('/api/orders');if(!Array.isArray(result.orders))throw new Error('Server orders are unavailable');
+    const ccSeen=window.__ccKnownOrders;
     orders=result.orders;try{saveOrders()}catch(_){}renderOrders();renderHistory();
+    try{const ccIds=new Set((result.orders||[]).map(o=>String(o.id)));
+      if(ccSeen instanceof Set){const ccFresh=(result.orders||[]).filter(o=>!ccSeen.has(String(o.id))&&!['done','cancelled'].includes(orderStatus(o)));
+        if(ccFresh.length)ccNotifyNewOrder(ccFresh);}
+      window.__ccKnownOrders=ccIds;}catch(_){}
     if($s('detailDialog')?.open&&detailOrderId!=null&&getOrder(detailOrderId))renderOrderDetail();
     if(!silent)showServiceToast('Orders synced');
   }
