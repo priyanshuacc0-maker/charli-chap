@@ -1,0 +1,101 @@
+name: Android APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - 'web/**'
+      - 'public/index.html'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle.properties'
+      - '.github/workflows/android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build signed release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble bundled web app
+        run: |
+          set -e
+          mkdir -p app/src/main/assets
+          if [ -f public/index.html ]; then
+            cp public/index.html app/src/main/assets/index.html
+            echo "Bundled public/index.html"
+          elif ls web/index.html.part-* >/dev/null 2>&1; then
+            cat web/index.html.part-* > app/src/main/assets/index.html
+            echo "Reassembled web/index.html.part-*"
+          else
+            echo "No bundled web app found - the APK will be a thin client."
+          fi
+          ls -l app/src/main/assets
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Write signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Repository secret KEYSTORE_BASE64 is missing. See ANDROID.md."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/cc-release.keystore"
+          ls -l "$RUNNER_TEMP/cc-release.keystore"
+
+      - name: Build signed release APK
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/cc-release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -e
+          VCODE=$((1000 + GITHUB_RUN_NUMBER))
+          VNAME="1.0.${GITHUB_RUN_NUMBER}"
+          gradle :app:assembleRelease --no-daemon \
+            -PappVersionCode="$VCODE" -PappVersionName="$VNAME"
+          APK="CharlieChaap-v${VNAME}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "$APK"
+          ls -lh "$APK"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CharlieChaap-apk
+          path: CharlieChaap-*.apk
+          retention-days: 90
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Charlie Chaap v1.0.${{ github.run_number }}
+          body: |
+            Signed release APK, build ${{ github.run_number }}.
+
+            Install it over a previous version to update - same signing key,
+            higher versionCode, so Android treats it as an update and keeps
+            your data.
+          files: CharlieChaap-*.apk
+          draft: false
+          prerelease: false
