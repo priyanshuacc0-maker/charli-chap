@@ -179,6 +179,103 @@ button{touch-action:manipulation}
   .status.cancelled{background:#f9e8e7;color:#9f2925}
 </style>
 
+
+<style id="rs-setup-styles">
+/* Restaurant setup card — matches the approved design */
+.service-settings-card{background:var(--service-paper);border:0!important;border-radius:20px;padding:20px;
+  box-shadow:0 1px 3px rgba(17,17,20,.07),0 10px 26px rgba(17,17,20,.05);display:block}
+.rs-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  padding-bottom:14px;border-bottom:1px solid var(--service-line);margin-bottom:14px}
+.rs-head-text{min-width:0}
+.rs-head h2{margin:0;font-size:26px;line-height:1.1;font-weight:800;letter-spacing:-.7px;color:var(--service-ink)}
+.rs-head p{margin:5px 0 0;font-size:13.5px;font-weight:500;color:var(--service-muted)}
+.rs-mark{flex:0 0 auto;width:60px;height:60px;border-radius:18px;background:#111114;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;letter-spacing:.6px}
+
+.rs-orders{display:flex;align-items:center;gap:11px}
+.rs-dot{width:12px;height:12px;border-radius:50%;background:#1B7F4B;box-shadow:0 0 0 4px rgba(27,127,75,.14);flex:0 0 auto}
+.rs-orders-text{flex:1;min-width:0}
+.rs-orders-text strong{display:block;font-size:17px;font-weight:800;color:var(--service-ink)}
+.rs-orders-text small{display:block;font-size:12.5px;color:var(--service-muted);margin-top:2px}
+#toggleBusinessOpen.rs-pill{flex:0 0 auto;background:#E7F4EA;color:#1B7F4B;border:0;border-radius:12px;
+  padding:9px 15px;font-size:14px;font-weight:800;min-height:0;line-height:1.1}
+#toggleBusinessOpen.rs-pill[aria-pressed="false"]{background:#FBE9E9;color:#9A2A2A}
+.rs-switch{flex:0 0 auto;width:52px;height:30px;border-radius:999px;background:#C9C9D0;position:relative;
+  cursor:pointer;transition:background .18s ease}
+.rs-switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .18s ease}
+#toggleBusinessOpen[aria-pressed="true"] + .rs-switch{background:#1B7F4B}
+#toggleBusinessOpen[aria-pressed="true"] + .rs-switch::after{transform:translateX(22px)}
+
+.rs-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.rs-tile{background:var(--service-paper);border:1px solid var(--service-line);border-radius:18px;padding:14px;
+  text-align:left;cursor:pointer;box-shadow:0 1px 2px rgba(17,17,20,.04)}
+.rs-tile-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.rs-icon{width:44px;height:44px;border-radius:15px;background:#FDF0DC;display:flex;align-items:center;justify-content:center}
+.rs-icon svg{width:24px;height:24px;stroke:#111114;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.rs-chev{color:#B4B4BE;display:inline-flex}
+.rs-chev svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.rs-tile strong{display:block;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--service-ink)}
+.rs-tile small{display:block;font-size:11.5px;color:var(--service-muted);margin-top:2px}
+
+.rs-gold{display:flex;align-items:center;gap:14px;width:100%;margin-top:12px;border:0;border-radius:20px;
+  padding:16px 18px;cursor:pointer;text-align:left;background:linear-gradient(180deg,#F8D190 0%,#F2BE6C 100%)}
+.rs-icon-dark{display:flex;align-items:center;justify-content:center}
+.rs-icon-dark svg{width:28px;height:28px;stroke:#111114;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.rs-gold-text{flex:1;min-width:0}
+.rs-gold-text strong{display:block;font-size:17px;font-weight:800;color:#111114;letter-spacing:-.2px}
+.rs-gold-text small{display:block;font-size:11.5px;color:#6B5320;margin-top:1px}
+.rs-chev.dark{color:#6B5320}
+
+.rs-staff{background:var(--service-paper);border:1px solid var(--service-line);border-radius:20px;padding:16px;margin-top:12px}
+.rs-staff-row{display:flex;align-items:center;gap:12px}
+.rs-avatar{width:46px;height:46px;border-radius:50%;background:#EFEFF5;display:flex;align-items:center;
+  justify-content:center;flex:0 0 auto}
+.rs-avatar svg{width:23px;height:23px;stroke:#111114;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.rs-staff-text{flex:1;min-width:0}
+.rs-staff-text strong{display:block;font-size:16px;font-weight:800;color:var(--service-ink)}
+.rs-staff-text small{display:block;font-size:11.5px;color:var(--service-muted);margin-top:2px;line-height:1.35}
+#serviceStaffLogin,#serviceStaffLogout{flex:0 0 auto;background:#111114;color:#fff;border:0;border-radius:13px;
+  padding:12px 14px;font-size:13px;font-weight:800;min-height:0;line-height:1.1}
+.rs-pass{display:block;margin-top:12px}
+.rs-pass span{display:block;font-size:11px;font-weight:700;color:var(--service-muted);margin-bottom:5px}
+.rs-pass input{width:100%;background:var(--service-soft);border:1px solid var(--service-line);border-radius:12px;
+  padding:11px 12px;font-size:13px;color:var(--service-ink)}
+.rs-status{display:flex;align-items:center;gap:8px;margin-top:10px}
+.rs-status .service-auth-indicator{width:8px;height:8px;border-radius:50%;background:#C9A227;display:block;flex:0 0 auto}
+.rs-status small{font-size:11px;color:var(--service-muted);line-height:1.35}
+.rs-publish{width:100%;margin-top:10px;background:var(--service-soft);border:1px solid var(--service-line);
+  border-radius:12px;padding:11px;font-size:12.5px;font-weight:700;color:var(--service-ink);min-height:0}
+
+.rs-backup{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--service-paper);
+  border:1px solid var(--service-line);border-radius:20px;padding:14px 16px;margin-top:12px}
+.rs-backup-btns{display:flex;gap:8px;margin-left:auto}
+.rs-backup-btns button{display:inline-flex;align-items:center;gap:6px;background:transparent;
+  border:1px solid var(--service-line);border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:700;
+  color:var(--service-ink);min-height:0}
+.rs-backup-btns svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+.rs-fees{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.rs-fees span{display:block;font-size:11px;font-weight:700;color:var(--service-muted);margin-bottom:5px}
+.rs-fees input{width:100%;background:var(--service-soft);border:1px solid var(--service-line);border-radius:12px;
+  padding:10px 12px;font-size:13px;color:var(--service-ink)}
+.rs-help{font-size:11px;color:var(--service-muted);line-height:1.45;margin:8px 0 0}
+
+.service-settings-card .service-connection-note{margin-top:12px;padding:10px 12px;border-radius:14px;
+  background:var(--service-soft);display:flex;gap:9px;align-items:flex-start}
+.service-settings-card .service-connection-note strong{font-size:11.5px}
+.service-settings-card .service-connection-note p{font-size:11px;margin:2px 0 0;line-height:1.4;color:var(--service-muted)}
+.rs-backup .rs-staff-text{flex:1 1 96px;min-width:96px}
+@media (max-width:430px){
+  .rs-head h2{font-size:22px}
+  .rs-tile strong{font-size:13.5px}
+  .rs-tile small{font-size:10.5px}
+  .rs-gold-text strong{font-size:15px}
+  .rs-staff-text strong{font-size:14.5px}
+  .rs-backup-btns{width:100%;margin-left:0;margin-top:10px;justify-content:flex-end}
+  .rs-staff{flex-wrap:wrap}
+}
+</style>
 </head>
 <body data-tab="home">
 <div id="app" class="app">
@@ -314,18 +411,78 @@ button{touch-action:manipulation}
       
       <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v4.5h-4.5"/></svg></div><div class="setting-text"><strong>Reset order list</strong></div><button id="clearAllMore">Reset</button></div>
       <section class="service-settings-card" aria-labelledby="serviceSettingsTitle">
-        <div class="service-settings-title"><div><span class="service-settings-kicker">SERVICE CONTROLS</span><h2 id="serviceSettingsTitle">Restaurant setup</h2><p>Control order availability, checkout fees and customer access.</p></div><span class="service-settings-mark">CC</span></div>
-        <div class="service-setting-row"><div><strong>Accepting orders</strong><small id="serviceStatusText">Orders are currently enabled.</small></div><button id="toggleBusinessOpen" class="service-toggle" type="button" aria-pressed="true">Open</button></div>
-        <div class="service-fee-grid"><label><span>Tax / GST (%)</span><input id="serviceTaxRate" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="0"></label><label><span>Delivery fee (₹)</span><input id="serviceDeliveryFee" type="number" inputmode="decimal" min="0" max="100000" step="1" value="0"></label></div>
-        <p class="service-settings-help">Keep tax at 0% unless the rate has been confirmed for your business. Delivery fee is added only to delivery orders. No online payment gateway is connected in this file.</p>
-        <div class="service-quick-actions"><button id="openCustomerPreview" type="button">Open customer menu</button><button id="copyCustomerLink" type="button">Copy customer link</button></div>
-        <section class="service-auth-panel" id="serviceAuthPanel" aria-label="Shared service connection">
-          <div class="service-auth-status"><span class="service-auth-indicator" id="serviceAuthIndicator"></span><div><strong id="serviceAuthTitle">Checking service connection…</strong><small id="serviceAuthDescription">Shared orders activate when this app is served by its included Node.js server.</small></div></div>
-          <label class="service-form-field service-admin-password-field"><span>Staff password</span><input id="serviceAdminPassword" type="password" autocomplete="current-password" placeholder="Enter server staff password"></label>
-          <div class="service-quick-actions"><button id="serviceStaffLogin" type="button">Staff sign in</button><button id="serviceStaffLogout" type="button" hidden>Sign out</button></div>
-          <button id="servicePublishMenu" class="service-publish-menu" type="button" disabled>Publish current menu to customers</button>
+        <div class="rs-head">
+          <div class="rs-head-text">
+            <h2 id="serviceSettingsTitle">Restaurant setup</h2>
+            <p>Manage your menu and staff access</p>
+          </div>
+          <span class="rs-mark">CC</span>
+        </div>
+
+        <div class="rs-orders" id="rsOrdersRow">
+          <span class="rs-dot"></span>
+          <div class="rs-orders-text">
+            <strong>Orders</strong>
+            <small id="serviceStatusText">Customers can place orders</small>
+          </div>
+          <button id="toggleBusinessOpen" class="rs-pill" type="button" aria-pressed="true">Open</button>
+          <span class="rs-switch" role="button" tabindex="0" aria-label="Toggle ordering"
+                onclick="document.getElementById('toggleBusinessOpen').click()"></span>
+        </div>
+
+        <div class="rs-tiles">
+          <button id="openCustomerPreview" class="rs-tile" type="button">
+            <span class="rs-tile-top"><span class="rs-icon"><svg viewBox="0 0 24 24"><path d="M4.2 9.4h15.6v9a1.2 1.2 0 0 1-1.2 1.2H5.4a1.2 1.2 0 0 1-1.2-1.2z"/><path d="M3.4 9.4l1.5-4.3a1 1 0 0 1 .9-.7h12.4a1 1 0 0 1 .9.7l1.5 4.3"/><path d="M9.2 19.6v-5.2h5.6v5.2"/></svg></span><span class="rs-chev"><svg viewBox="0 0 24 24"><path d="M9.4 5.6L15.8 12l-6.4 6.4"/></svg></span></span>
+            <strong>Customer menu</strong>
+            <small>Open menu for customers</small>
+          </button>
+          <button id="copyCustomerLink" class="rs-tile" type="button">
+            <span class="rs-tile-top"><span class="rs-icon"><svg viewBox="0 0 24 24"><path d="M10.2 13.8a3.4 3.4 0 0 0 4.8 0l2.6-2.6a3.4 3.4 0 0 0-4.8-4.8l-1.2 1.2"/><path d="M13.8 10.2a3.4 3.4 0 0 0-4.8 0l-2.6 2.6a3.4 3.4 0 0 0 4.8 4.8l1.2-1.2"/></svg></span><span class="rs-chev"><svg viewBox="0 0 24 24"><path d="M9.4 5.6L15.8 12l-6.4 6.4"/></svg></span></span>
+            <strong>Copy customer link</strong>
+            <small>Share your menu link</small>
+          </button>
+        </div>
+
+        <button id="openMenuMore" class="rs-gold" type="button">
+          <span class="rs-icon-dark"><svg viewBox="0 0 24 24"><path d="M5 6.6h7.4M5 10.8h5.4M5 15h5.4"/><path d="M16.4 8.6l2 2-6 6-2.6.6.6-2.6z"/></svg></span>
+          <span class="rs-gold-text"><strong>Update menu</strong><small>Add, edit or remove menu items</small></span>
+          <span class="rs-chev dark"><svg viewBox="0 0 24 24"><path d="M9.4 5.6L15.8 12l-6.4 6.4"/></svg></span>
+        </button>
+
+        <section class="rs-staff" id="serviceAuthPanel" aria-label="Shared service connection">
+          <div class="rs-staff-row">
+            <span class="rs-avatar"><svg viewBox="0 0 24 24"><circle cx="9" cy="8.2" r="3.2"/><path d="M3.6 19.4c0-2.8 2.4-4.6 5.4-4.6s5.4 1.8 5.4 4.6"/><path d="M16 5.4a3 3 0 0 1 0 5.8"/><path d="M17.4 14.9c1.9.5 3.2 2 3.2 4.1"/></svg></span>
+            <div class="rs-staff-text">
+              <strong>Staff access</strong>
+              <small id="serviceAuthTitle">Checking service connection…</small>
+            </div>
+            <button id="serviceStaffLogin" type="button">Enter as staff</button>
+            <button id="serviceStaffLogout" type="button" hidden>Sign out</button>
+          </div>
+          <label class="rs-pass"><span>Staff password</span><input id="serviceAdminPassword" type="password" autocomplete="current-password" placeholder="Enter staff password"></label>
+          <div class="rs-status">
+            <span class="service-auth-indicator" id="serviceAuthIndicator"></span>
+            <small id="serviceAuthDescription">Shared orders activate when this app is served by its included Node.js server.</small>
+          </div>
+          <button id="servicePublishMenu" class="rs-publish" type="button" disabled>Publish current menu to customers</button>
         </section>
-        <div class="service-backup-grid"><button id="downloadServiceBackup" type="button">Export full backup</button><button id="restoreServiceBackup" type="button">Restore backup</button><input id="serviceBackupFile" type="file" accept="application/json,.json" hidden></div>
+
+        <div class="rs-backup">
+          <span class="rs-avatar"><svg viewBox="0 0 24 24"><path d="M7.6 18.4h8.8a3.4 3.4 0 0 0 .3-6.8 5 5 0 0 0-9.5-1.3 3.6 3.6 0 0 0 .4 8.1z"/></svg></span>
+          <div class="rs-staff-text"><strong>Backup</strong><small>Keep your data safe</small></div>
+          <div class="rs-backup-btns">
+            <button id="downloadServiceBackup" type="button"><svg viewBox="0 0 24 24"><path d="M12 15.6V4.4M8.2 8.2L12 4.4l3.8 3.8M5 16.4v2.2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.2"/></svg>Export</button>
+            <button id="restoreServiceBackup" type="button"><svg viewBox="0 0 24 24"><path d="M12 4.4v11.2M8.2 11.8L12 15.6l3.8-3.8M5 16.4v2.2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.2"/></svg>Restore</button>
+          </div>
+          <input id="serviceBackupFile" type="file" accept="application/json,.json" hidden>
+        </div>
+
+        <div class="rs-fees">
+          <label><span>Tax / GST (%)</span><input id="serviceTaxRate" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="0"></label>
+          <label><span>Delivery fee (₹)</span><input id="serviceDeliveryFee" type="number" inputmode="decimal" min="0" max="100000" step="1" value="0"></label>
+        </div>
+        <p class="rs-help">Keep tax at 0% unless the rate has been confirmed for your business. Delivery fee is added only to delivery orders.</p>
+
         <div class="service-connection-note"><span class="service-connection-dot"></span><div><strong>Single-browser storage</strong><p>Orders and menu changes save in this browser. Public multi-device ordering requires a shared database and staff authentication before launch.</p></div></div>
       </section>
     </div>
@@ -1480,7 +1637,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
   function updateCustomerOpenState(){
     const el=$s('customerOpenState'),text=$s('customerOpenText'),btn=$s('toggleBusinessOpen');if(el){el.classList.toggle('is-closed',!serviceConfig.isOpen);safeText(text,serviceConfig.isOpen?'Accepting orders':'Currently closed — orders paused')}
     if(btn){btn.classList.toggle('is-closed',!serviceConfig.isOpen);btn.setAttribute('aria-pressed',String(!!serviceConfig.isOpen));safeText(btn,serviceConfig.isOpen?'Open':'Closed')}
-    safeText($s('serviceStatusText'),serviceConfig.isOpen?'Orders are currently enabled.':'New customer orders are paused.');
+    safeText($s('serviceStatusText'),serviceConfig.isOpen?'Customers can place orders':'New orders are paused');
     if($s('customerPlaceOrder'))$s('customerPlaceOrder').disabled=!serviceConfig.isOpen;
   }
   function showCustomerReceipt(order){
@@ -1682,7 +1839,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
     const button=$s('serviceStaffLogin');button.disabled=true;button.textContent='Signing in…';
     try{await apiFetch('/api/auth/login',{method:'POST',body:JSON.stringify({password})});staffAuthenticated=true;$s('serviceAdminPassword').value='';updateStaffAuthUI();await pullRemoteMenu(true);await startStaffSync();setTab('orders');showServiceToast('Staff sign-in successful')}
     catch(error){showServiceToast(error.message||'Sign-in failed')}
-    finally{button.disabled=false;button.textContent='Staff sign in'}
+    finally{button.disabled=false;button.textContent='Enter as staff'}
   }
   async function staffSignOut(){try{await apiFetch('/api/auth/logout',{method:'POST',body:'{}'})}catch(_){}staffAuthenticated=false;if(serviceSyncTimer)clearInterval(serviceSyncTimer);serviceSyncTimer=null;orders=[];saveOrders();renderOrders();renderHistory();updateStaffAuthUI();setTab('more');showServiceToast('Signed out')}
   async function exportFullBackupRemote(){const data=await apiFetch('/api/backup');const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`charlie-chaap-server-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);showServiceToast('Server backup exported')}
