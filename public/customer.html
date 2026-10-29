@@ -674,7 +674,7 @@ function renderGrid() {
   }
   $('grid').innerHTML = list.map((item) => {
     const photo = item.image && /^https?:|^data:image/.test(item.image) ? item.image : photoFor(item.n);
-    const desc = DESCRIPTIONS[item.n] || 'Freshly prepared';
+    const desc = (item.desc && String(item.desc).trim()) || DESCRIPTIONS[item.n] || 'Freshly prepared';
     const soldOut = item.available === false;
     const fav = state.favs.indexOf(item.n) >= 0;
     const sizes = availableSizes(item);

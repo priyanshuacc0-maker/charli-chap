@@ -177,7 +177,8 @@ public class Store {
             item.put("a", aliasArray);
             item.put("custom", raw.optBoolean("custom", false));
             item.put("available", raw.has("available") ? raw.optBoolean("available", true) : true);
-            item.put("image", image);
+            item.put("desc", cleanText(raw.optString("desc", raw.optString("description", "")), 140));
+        item.put("image", image);
         } catch (JSONException error) {
             throw new ApiException(400, "That menu item could not be read.");
         }

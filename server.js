@@ -71,7 +71,7 @@ function cleanMenuItem(raw) {
   return {
     n, c, h, f,
     hLabel: cleanText(raw.hLabel, 24), fLabel: cleanText(raw.fLabel, 24),
-    a: [...new Set(aliases)], custom: !!raw.custom,
+    a: [...new Set(aliases)], custom: !!raw.custom, desc: cleanText(raw.desc || raw.description, 140),
     available: raw.available !== false, image: rawImage
   };
 }
