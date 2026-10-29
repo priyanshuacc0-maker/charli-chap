@@ -1,0 +1,12 @@
+{
+  "name": "charlie-chaap-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Charlie Chaap digital menu, ordering and staff service",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
