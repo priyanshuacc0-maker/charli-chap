@@ -799,6 +799,15 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
       oldState = localStorage.getItem(MENU_STATE_KEY);
       localStorage.setItem(CUSTOM_MENU_KEY, JSON.stringify(customItems));
       localStorage.setItem(MENU_STATE_KEY, JSON.stringify(menuManagement));
+      try {
+        if (window.__ccShared && window.__ccStaff) {
+          const pushItems = menu.map(item => ({ n: item.n, c: item.c || 'Other', h: item.h == null ? null : Number(item.h), f: item.f == null ? null : Number(item.f), hLabel: item.hLabel || '', fLabel: item.fLabel || '', a: Array.isArray(item.a) ? item.a : [item.n], custom: !!item.custom, available: item.available !== false, image: item.image || '' }));
+          clearTimeout(window.__ccMenuPushTimer);
+          window.__ccMenuPushTimer = setTimeout(() => {
+            fetch('/api/menu', { method: 'PUT', credentials: 'same-origin', cache: 'no-store', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: pushItems }) }).catch(() => {});
+          }, 700);
+        }
+      } catch (_) {}
       return true;
     } catch (error) {
       try {
@@ -1755,7 +1764,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
   function setConnectionLabel(title,description,state='offline'){
     safeText($s('serviceAuthTitle'),title);safeText($s('serviceAuthDescription'),description);const dot=$s('serviceAuthIndicator');if(dot)dot.className='service-auth-indicator '+state;
   }
-  function updateStaffAuthUI(){
+  function updateStaffAuthUI(){window.__ccStaff=!!staffAuthenticated;
     const password=$s('serviceAdminPassword'),login=$s('serviceStaffLogin'),logout=$s('serviceStaffLogout'),publish=$s('servicePublishMenu');
     const note=document.querySelector('.service-connection-note');
     if(note){const heading=note.querySelector('strong'),paragraph=note.querySelector('p');if(!sharedServiceActive){if(heading)heading.textContent='Single-browser storage';if(paragraph)paragraph.textContent='Orders and menu changes save in this browser. Public multi-device ordering needs the included shared service server.'}else{if(heading)heading.textContent='Shared server storage';if(paragraph)paragraph.textContent='Orders, menu and service settings sync through the shared server. Use persistent hosting storage and export regular backups.'}}
@@ -1825,11 +1834,13 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
     if(!['http:','https:'].includes(location.protocol)){updateStaffAuthUI();return}
     try{
       const healthRes=await fetch('/api/health',{cache:'no-store'});if(!healthRes.ok)return;const health=await healthRes.json();if(health.service!=='Charlie Chaap Service API')return;
-      sharedServiceActive=true;
+      sharedServiceActive=true;window.__ccShared=true;
       const publicData=await apiFetch('/api/public-config');if(publicData.config&&typeof publicData.config==='object')serviceConfig={...defaultConfig,...publicData.config};persistServiceConfig();applyServiceSettingsToUI();
       const session=await apiFetch('/api/auth/session');staffAuthenticated=!!session.authenticated;updateStaffAuthUI();
-      if(customerMode){await pullRemoteMenu(false).catch(()=>{});}
-      else if(staffAuthenticated){await pullRemoteMenu(true).catch(()=>{});await startStaffSync()}
+      await pullRemoteMenu(staffAuthenticated).catch(()=>{});
+      try{refreshMenuViews();renderCustomerCategories();renderCustomerMenu();renderCustomerCart();}catch(_){}
+      if(customerMode){}
+      else if(staffAuthenticated){await startStaffSync()}
       else {orders=[];renderOrders();renderHistory()}
       updateCustomerOpenState();
     }catch(_){/* Static hosting keeps the local-only mode and remains usable. */updateStaffAuthUI()}
