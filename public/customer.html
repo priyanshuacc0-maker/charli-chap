@@ -251,6 +251,38 @@ input,textarea,select{font-family:inherit}
 .status-pill.cancelled i{background:var(--red)}
 
 .footnote{text-align:center;font-size:11px;color:#A6A6B0;padding:18px 0 4px;font-weight:500}
+
+/* live order banner */
+body.has-banner{padding-top:86px}
+.order-banner{
+  position:fixed;left:12px;right:12px;top:max(10px,env(safe-area-inset-top));z-index:80;
+  max-width:496px;margin:0 auto;display:flex;align-items:center;gap:11px;
+  background:var(--dark);color:#fff;border-radius:16px;padding:12px 12px 12px 14px;
+  box-shadow:0 12px 30px rgba(17,17,20,.32);transform:translateY(-160%);
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),background .25s
+}
+.order-banner.on{transform:translateY(0)}
+.order-banner .ob-dot{width:10px;height:10px;border-radius:50%;background:#F2B23E;flex:0 0 auto;
+  box-shadow:0 0 0 4px rgba(242,178,62,.22);animation:obpulse 1.6s ease-in-out infinite}
+@keyframes obpulse{0%,100%{opacity:1}50%{opacity:.45}}
+.order-banner .ob-text{flex:1;min-width:0}
+.order-banner strong{display:block;font-size:13.5px;font-weight:700;letter-spacing:-.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-banner small{display:block;font-size:11.5px;color:#B9B9C4;margin-top:1px;line-height:1.3}
+.order-banner .ob-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.12);
+  display:grid;place-items:center;flex:0 0 auto}
+.order-banner .ob-close svg{width:12px;height:12px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round}
+.order-banner.preparing{background:#1F2A44}
+.order-banner.preparing .ob-dot{background:#7FA6FF;box-shadow:0 0 0 4px rgba(127,166,255,.22)}
+.order-banner.done{background:#14532D}
+.order-banner.done .ob-dot{background:#4ADE80;box-shadow:0 0 0 4px rgba(74,222,128,.24);animation:none}
+.order-banner.cancelled{background:#5B1A1D}
+.order-banner.cancelled .ob-dot{background:#F87171;box-shadow:0 0 0 4px rgba(248,113,113,.22);animation:none}
+
+/* compact table prompt */
+.table-sheet .sheet-body{padding-top:2px}
+.table-sheet .field{margin-bottom:8px}
+.table-sheet .totals{padding-top:6px}
 @media (max-width:419px){.meta-extra{display:none}}
 @media (max-width:410px){
   .brand h1{font-size:23px;letter-spacing:-.9px}
@@ -337,7 +369,7 @@ input,textarea,select{font-family:inherit}
     </button>
     <div class="cart-sep"></div>
     <button class="checkout" id="goCheckout">
-      Checkout
+      Place order
       <svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"></path></svg>
     </button>
   </div>
@@ -355,54 +387,41 @@ input,textarea,select{font-family:inherit}
     </div>
     <div class="sheet-body" id="cartBody"></div>
     <div class="sheet-foot">
-      <button class="btn-primary btn-gold" id="cartToCheckout">Checkout</button>
+      <button class="btn-primary btn-gold" id="cartToCheckout">Place order</button>
     </div>
   </div>
 </div>
 
-<!-- checkout sheet -->
-<div class="sheet" id="checkoutSheet">
+<!-- order status banner -->
+<div class="order-banner" id="orderBanner" role="status" aria-live="polite">
+  <span class="ob-dot"></span>
+  <div class="ob-text">
+    <strong id="obTitle">Order placed</strong>
+    <small id="obSub">We are preparing it now</small>
+  </div>
+  <button class="ob-close" id="obClose" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+  </button>
+</div>
+
+<!-- table number prompt -->
+<div class="sheet table-sheet" id="tableSheet">
   <div class="sheet-in">
     <div class="sheet-grip"></div>
     <div class="sheet-head">
-      <h3 id="checkoutTitle">Checkout</h3>
+      <h3>Which table?</h3>
       <button class="x" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
     </div>
     <div class="sheet-body">
-      <div class="err" id="checkoutErr"></div>
-      <div id="checkoutForm">
-        <div class="seg" id="typeSeg">
-          <button data-type="dine-in" class="on">Dine-in</button>
-          <button data-type="takeaway">Takeaway</button>
-          <button data-type="delivery">Delivery</button>
-        </div>
-        <div class="field"><label>Your name</label><input id="fName" autocomplete="name" placeholder="Name"></div>
-        <div class="field"><label>Mobile number</label><input id="fPhone" inputmode="tel" autocomplete="tel" placeholder="10-digit mobile number"></div>
-        <div class="field" id="tableField"><label>Table number</label><input id="fTable" placeholder="e.g. 4"></div>
-        <div class="field" id="addressField" style="display:none"><label>Delivery address</label><textarea id="fAddress" placeholder="House, street, landmark"></textarea></div>
-        <div class="field"><label>Payment</label>
-          <div class="seg" id="paySeg">
-            <button data-pay="Cash at counter" class="on">Cash</button>
-            <button data-pay="UPI at counter">UPI</button>
-            <button data-pay="Cash on delivery" id="codBtn" style="display:none">COD</button>
-          </div>
-        </div>
-        <div class="field"><label>Notes for the kitchen (optional)</label><input id="fNotes" placeholder="Less spicy, no onion…"></div>
-        <div class="totals" id="checkoutTotals"></div>
+      <div class="err" id="tableErr"></div>
+      <div class="field">
+        <label>Table number</label>
+        <input id="fTable" inputmode="numeric" autocomplete="off" placeholder="e.g. 4" maxlength="6">
       </div>
-      <div id="checkoutDone" style="display:none">
-        <div class="done">
-          <div class="tick"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"></path></svg></div>
-          <h4>Order placed</h4>
-          <p>We have your order. Please keep this screen open to see when it is ready.</p>
-          <div class="num" id="doneNum">Order #1</div>
-          <div class="status-pill" id="doneStatus"><i></i><span>Pending</span></div>
-        </div>
-      </div>
+      <div class="totals" id="tableTotals"></div>
     </div>
     <div class="sheet-foot">
       <button class="btn-primary btn-gold" id="placeOrder">Place order</button>
-      <button class="btn-primary" id="doneClose" style="display:none;background:var(--dark)">Back to menu</button>
     </div>
   </div>
 </div>
@@ -520,6 +539,7 @@ const state = {
   favs: [],
   orderType: 'dine-in',
   payment: 'Cash at counter',
+  lastTable: '',
   lastOrder: null,
   pollTimer: null
 };
@@ -580,7 +600,6 @@ function addToCart(item) {
   saveCart();
   renderCartBar();
   renderCartSheet();
-  bump();
 }
 function setQty(key, delta) {
   const line = state.cart.find((l) => l.key === key);
@@ -592,12 +611,6 @@ function setQty(key, delta) {
   renderCartSheet();
   if (!state.cart.length) closeSheets();
 }
-function bump() {
-  const bar = $('cartbar');
-  bar.style.transform = 'translateY(0)';
-  setTimeout(() => bar.classList.add('on'), 10);
-}
-
 /* ---------- rendering ---------- */
 function renderChips() {
   const present = CATEGORY_ORDER.filter((cat) => cat === 'All' || state.items.some((i) => i.c === cat));
@@ -713,7 +726,9 @@ function renderCartBar() {
   const subtotal = cartSubtotal();
   $('bagCount').textContent = String(count);
   $('bagSummary').textContent = count + (count === 1 ? ' item' : ' items') + ' · ' + money(subtotal);
-  $('cartbar').classList.toggle('on', count > 0);
+  const bar = $('cartbar');
+  bar.style.transform = '';
+  bar.classList.toggle('on', count > 0);
 }
 
 function renderCartSheet() {
@@ -766,50 +781,26 @@ function openSheet(id) {
 function closeSheets() {
   $('sheetBg').classList.remove('on');
   $('cartSheet').classList.remove('on');
-  $('checkoutSheet').classList.remove('on');
+  $('tableSheet').classList.remove('on');
   document.body.style.overflow = '';
 }
 
-function openCheckout() {
+function openTablePrompt() {
   if (!state.cart.length) return;
-  $('checkoutForm').style.display = '';
-  $('checkoutDone').style.display = 'none';
-  $('placeOrder').style.display = '';
-  $('doneClose').style.display = 'none';
-  $('checkoutTitle').textContent = 'Checkout';
-  $('checkoutErr').classList.remove('on');
-  updateTypeUi();
-  $('checkoutTotals').innerHTML = cartTotalsHtml();
-  openSheet('checkoutSheet');
-}
-
-function updateTypeUi() {
-  $('typeSeg').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.type === state.orderType));
-  $('tableField').style.display = state.orderType === 'dine-in' ? '' : 'none';
-  $('addressField').style.display = state.orderType === 'delivery' ? '' : 'none';
-  $('codBtn').style.display = state.orderType === 'delivery' ? '' : 'none';
-  if (state.orderType !== 'delivery' && state.payment === 'Cash on delivery') state.payment = 'Cash at counter';
-  $('paySeg').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.pay === state.payment));
+  $('tableErr').classList.remove('on');
+  $('tableTotals').innerHTML = cartTotalsHtml();
+  $('fTable').value = state.lastTable || '';
+  openSheet('tableSheet');
+  setTimeout(() => { try { $('fTable').focus(); } catch (e) {} }, 220);
 }
 
 /* ---------- placing the order ---------- */
 async function placeOrder() {
-  const errorBox = $('checkoutErr');
+  const errorBox = $('tableErr');
   errorBox.classList.remove('on');
-  const name = $('fName').value.trim();
-  const phone = $('fPhone').value.trim();
   const table = $('fTable').value.trim();
-  const address = $('fAddress').value.trim();
-  const notes = $('fNotes').value.trim();
-
-  const digits = phone.replace(/\D/g, '');
-  let problem = '';
-  if (name.length < 2) problem = 'Please enter your name.';
-  else if (digits.length < 10 || digits.length > 15) problem = 'Enter a valid mobile number (10–15 digits).';
-  else if (state.orderType === 'dine-in' && !table) problem = 'Enter your table number.';
-  else if (state.orderType === 'delivery' && !address) problem = 'Enter the delivery address.';
-  if (problem) {
-    errorBox.textContent = problem;
+  if (!table) {
+    errorBox.textContent = 'Enter your table number.';
     errorBox.classList.add('on');
     return;
   }
@@ -819,30 +810,22 @@ async function placeOrder() {
   button.textContent = 'Placing order…';
   try {
     const payload = {
-      orderType: state.orderType,
-      customerName: name,
-      phone: phone,
+      orderType: 'dine-in',
+      customerName: 'Table ' + table,
+      phone: '0000000000',
       tableNumber: table,
-      address: address,
-      notes: notes,
-      paymentMethod: state.payment,
+      paymentMethod: 'Cash at counter',
       items: state.cart.map((line) => ({ name: line.name, size: line.size, qty: line.qty }))
     };
     const data = await api('/api/orders', { method: 'POST', body: JSON.stringify(payload) });
     const order = data.order || {};
-    state.lastOrder = order;
+    state.lastTable = table;
     state.cart = [];
     saveCart();
     renderCartBar();
     renderCartSheet();
-
-    $('checkoutForm').style.display = 'none';
-    $('checkoutDone').style.display = '';
-    $('placeOrder').style.display = 'none';
-    $('doneClose').style.display = '';
-    $('checkoutTitle').textContent = 'Thank you';
-    $('doneNum').textContent = 'Order #' + (order.id !== undefined ? order.id : '');
-    setStatus(order.status || 'pending');
+    closeSheets();
+    showBanner(order);
     startPolling(order.id);
   } catch (error) {
     errorBox.textContent = error.message || 'Could not place the order. Please try again.';
@@ -853,11 +836,34 @@ async function placeOrder() {
   }
 }
 
-function setStatus(status) {
-  const pill = $('doneStatus');
-  const label = { pending: 'Pending', preparing: 'Preparing', done: 'Ready', cancelled: 'Cancelled' }[status] || status;
-  pill.className = 'status-pill ' + status;
-  pill.querySelector('span').textContent = label;
+/* ---------- live status banner ---------- */
+const STATUS_TEXT = {
+  pending: { title: (n) => 'Order #' + n + ' · Pending', sub: 'We have your order and will start soon' },
+  preparing: { title: (n) => 'Order #' + n + ' · Preparing', sub: 'Your food is on the counter' },
+  done: { title: (n) => 'Order #' + n + ' is ready', sub: 'Please collect it — thank you!' },
+  cancelled: { title: (n) => 'Order #' + n + ' cancelled', sub: 'Please speak to our staff' }
+};
+
+function showBanner(order) {
+  state.lastOrder = { id: order.id, status: order.status || 'pending' };
+  try { localStorage.setItem('cc_last_order', JSON.stringify(state.lastOrder)); } catch (e) {}
+  updateBanner(order.status || 'pending');
+  $('orderBanner').classList.add('on');
+  document.body.classList.add('has-banner');
+}
+
+function updateBanner(status) {
+  const banner = $('orderBanner');
+  const info = STATUS_TEXT[status] || STATUS_TEXT.pending;
+  const id = (state.lastOrder && state.lastOrder.id !== undefined) ? state.lastOrder.id : '';
+  banner.className = 'order-banner on ' + status;
+  $('obTitle').textContent = info.title(id);
+  $('obSub').textContent = info.sub;
+}
+
+function hideBanner() {
+  $('orderBanner').classList.remove('on');
+  document.body.classList.remove('has-banner');
 }
 
 function startPolling(id) {
@@ -867,7 +873,9 @@ function startPolling(id) {
     try {
       const data = await api('/api/orders/' + encodeURIComponent(id) + '/status');
       if (data && data.order) {
-        setStatus(data.order.status);
+        state.lastOrder = { id: data.order.id, status: data.order.status };
+        try { localStorage.setItem('cc_last_order', JSON.stringify(state.lastOrder)); } catch (e) {}
+        updateBanner(data.order.status);
         if (data.order.status === 'done' || data.order.status === 'cancelled') {
           clearInterval(state.pollTimer);
           state.pollTimer = null;
@@ -875,6 +883,18 @@ function startPolling(id) {
       }
     } catch (e) { /* keep trying quietly */ }
   }, 5000);
+}
+
+function resumeLastOrder() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem('cc_last_order') || 'null'); } catch (e) { saved = null; }
+  if (!saved || saved.id === undefined || saved.id === null) return;
+  state.lastOrder = saved;
+  if (saved.status === 'done' || saved.status === 'cancelled') return;
+  updateBanner(saved.status || 'pending');
+  $('orderBanner').classList.add('on');
+  document.body.classList.add('has-banner');
+  startPolling(saved.id);
 }
 
 /* ---------- boot ---------- */
@@ -925,30 +945,19 @@ function wireUi() {
     renderGrid();
   });
   $('viewCart').addEventListener('click', () => { renderCartSheet(); openSheet('cartSheet'); });
-  $('cartToCheckout').addEventListener('click', openCheckout);
-  $('goCheckout').addEventListener('click', openCheckout);
+  $('cartToCheckout').addEventListener('click', openTablePrompt);
+  $('goCheckout').addEventListener('click', openTablePrompt);
+  $('placeOrder').addEventListener('click', placeOrder);
+  $('obClose').addEventListener('click', hideBanner);
   $('sheetBg').addEventListener('click', closeSheets);
   document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeSheets));
-  $('typeSeg').querySelectorAll('button').forEach((b) => {
-    b.addEventListener('click', () => {
-      state.orderType = b.dataset.type;
-      updateTypeUi();
-      $('checkoutTotals').innerHTML = cartTotalsHtml();
-    });
-  });
-  $('paySeg').querySelectorAll('button').forEach((b) => {
-    b.addEventListener('click', () => {
-      state.payment = b.dataset.pay;
-      updateTypeUi();
-    });
-  });
-  $('placeOrder').addEventListener('click', placeOrder);
-  $('doneClose').addEventListener('click', () => { closeSheets(); loadMenu(); });
+
   window.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSheets(); });
 }
 
 loadLocal();
 wireUi();
+resumeLastOrder();
 loadMenu();
 </script>
 </body>
