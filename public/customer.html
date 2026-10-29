@@ -369,7 +369,7 @@ body.has-banner{padding-top:86px}
     </button>
     <div class="cart-sep"></div>
     <button class="checkout" id="goCheckout">
-      Place order
+      View order
       <svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"></path></svg>
     </button>
   </div>
@@ -946,7 +946,7 @@ function wireUi() {
   });
   $('viewCart').addEventListener('click', () => { renderCartSheet(); openSheet('cartSheet'); });
   $('cartToCheckout').addEventListener('click', openTablePrompt);
-  $('goCheckout').addEventListener('click', openTablePrompt);
+  $('goCheckout').addEventListener('click', () => { renderCartSheet(); openSheet('cartSheet'); });
   $('placeOrder').addEventListener('click', placeOrder);
   $('obClose').addEventListener('click', hideBanner);
   $('sheetBg').addEventListener('click', closeSheets);
