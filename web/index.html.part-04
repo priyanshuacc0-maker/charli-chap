@@ -183,7 +183,7 @@ button{touch-action:manipulation}
 <style id="rs-setup-styles">
 /* Restaurant setup card — matches the approved design */
 .service-settings-card{background:var(--service-paper);border:0!important;border-radius:20px;padding:20px;
-  box-shadow:0 1px 3px rgba(17,17,20,.07),0 10px 26px rgba(17,17,20,.05);display:block}
+  margin:0 0 16px;box-shadow:0 1px 3px rgba(17,17,20,.07),0 10px 26px rgba(17,17,20,.05);display:block}
 .rs-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
   padding-bottom:14px;border-bottom:1px solid var(--service-line);margin-bottom:14px}
 .rs-head-text{min-width:0}
@@ -277,7 +277,7 @@ button{touch-action:manipulation}
 }
 </style>
 </head>
-<body data-tab="home">
+<body data-tab="orders">
 <div id="app" class="app">
   <header class="topbar">
     <button class="round-action" id="topSearch" aria-label="Search orders"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
@@ -288,7 +288,7 @@ button{touch-action:manipulation}
     <button class="round-action" id="topMore" aria-label="More options"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
   </header>
 
-  <section class="view active" id="homeView" data-view="home">
+  <section class="view" id="homeView" data-view="home">
     <div class="restaurant-home premium-restaurant-hero">
       <div class="hero-topline"><span class="hero-live-dot"></span> CHARLIE CHAAP <span class="hero-topline-rule"></span><span class="hero-open-label">OPEN</span></div>
       <div class="premium-hero-copy">
@@ -336,7 +336,7 @@ button{touch-action:manipulation}
     <div class="customer-help-note"><strong>Need something special?</strong><span>Add preparation notes during checkout. Availability and order confirmation are handled by the restaurant.</span></div>
   </section>
 
-  <section class="view" id="ordersView" data-view="orders">
+  <section class="view active" id="ordersView" data-view="orders">
     <div class="page-head"><h1>Orders</h1></div>
     <section class="quick-card order-entry-card" aria-label="Quick order entry">
       <div class="quick-row">
@@ -404,13 +404,7 @@ button{touch-action:manipulation}
 
   <section class="view" id="moreView" data-view="more">
     <div class="page-head"><h1>More</h1></div>
-    <div class="more-grid">
-      <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></div><div class="setting-text"><strong>Dark mode</strong></div><button class="switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="Dark mode"><i></i></button></div>
-      <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 18v3h14v-3"/></svg></div><div class="setting-text"><strong>Export orders</strong></div><button id="exportMore">Export</button></div>
-      <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg></div><div class="setting-text"><strong>Menu & rates</strong></div><button id="openMenuMore">View menu</button></div>
-      
-      <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v4.5h-4.5"/></svg></div><div class="setting-text"><strong>Reset order list</strong></div><button id="clearAllMore">Reset</button></div>
-      <section class="service-settings-card" aria-labelledby="serviceSettingsTitle">
+<section class="service-settings-card" aria-labelledby="serviceSettingsTitle">
         <div class="rs-head">
           <div class="rs-head-text">
             <h2 id="serviceSettingsTitle">Restaurant setup</h2>
@@ -443,7 +437,7 @@ button{touch-action:manipulation}
           </button>
         </div>
 
-        <button id="openMenuMore" class="rs-gold" type="button">
+        <button id="rsUpdateMenu" class="rs-gold" type="button">
           <span class="rs-icon-dark"><svg viewBox="0 0 24 24"><path d="M5 6.6h7.4M5 10.8h5.4M5 15h5.4"/><path d="M16.4 8.6l2 2-6 6-2.6.6.6-2.6z"/></svg></span>
           <span class="rs-gold-text"><strong>Update menu</strong><small>Add, edit or remove menu items</small></span>
           <span class="rs-chev dark"><svg viewBox="0 0 24 24"><path d="M9.4 5.6L15.8 12l-6.4 6.4"/></svg></span>
@@ -485,6 +479,13 @@ button{touch-action:manipulation}
 
         <div class="service-connection-note"><span class="service-connection-dot"></span><div><strong>Single-browser storage</strong><p>Orders and menu changes save in this browser. Public multi-device ordering requires a shared database and staff authentication before launch.</p></div></div>
       </section>
+    <div class="more-grid">
+      <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></div><div class="setting-text"><strong>Dark mode</strong></div><button class="switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="Dark mode"><i></i></button></div>
+      <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 18v3h14v-3"/></svg></div><div class="setting-text"><strong>Export orders</strong></div><button id="exportMore">Export</button></div>
+      <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg></div><div class="setting-text"><strong>Menu & rates</strong></div><button id="openMenuMore">View menu</button></div>
+      
+      <div class="setting-card"><div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v4.5h-4.5"/></svg></div><div class="setting-text"><strong>Reset order list</strong></div><button id="clearAllMore">Reset</button></div>
+      
     </div>
     
   </section>
@@ -493,9 +494,9 @@ button{touch-action:manipulation}
 <div id="draftDock" class="draft-dock" hidden><div class="draft-summary"><strong id="draftCount">0 items in order</strong><small id="draftTotal">₹0</small></div><button class="black-btn" id="reviewDraft">Review order</button></div>
 <div id="takeDock" class="take-dock" hidden><div class="take-dock-info"><strong id="takeDockCount">0 items</strong><span id="takeDockTotal">₹0</span></div><button class="black-btn" id="takeDockReview" type="button">Review order</button></div>
 <nav class="bottom-wrap" aria-label="Main navigation"><div class="bottom-nav">
-  <button class="nav-btn active" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
+  <button class="nav-btn" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
   <button class="nav-btn" data-tab="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10"/><path d="M17 21V3c-2.3 1.3-3.5 4.2-3.5 7.5V13H17"/></svg><span>Menu</span></button>
-  <button class="nav-btn orders-center" id="newOrderBtn" data-tab="orders" aria-label="Orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span>Orders</span></button>
+  <button class="nav-btn orders-center active" id="newOrderBtn" data-tab="orders" aria-label="Orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span>Orders</span></button>
   <button class="nav-btn" data-tab="history"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5M12 8v4.2l2.8 1.8"/></svg><span>History</span></button>
   <button class="nav-btn" data-tab="more"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="5" height="5" rx="1"/><rect x="15" y="4" width="5" height="5" rx="1"/><rect x="4" y="15" width="5" height="5" rx="1"/><rect x="15" y="15" width="5" height="5" rx="1"/></svg><span>More</span></button>
 </div></nav>
@@ -595,7 +596,7 @@ function safeLoad(key,fallback){try{const v=JSON.parse(localStorage.getItem(key)
 let orders=safeLoad(KEY,[]);if(!Array.isArray(orders))orders=[];
 orders=orders.map(o=>{const status=o.status||((o.done)?'done':'pending');const items=Array.isArray(o.items)?o.items.map(i=>({...i,qty:Math.max(1,Number(i.qty)||1),rate:Number(i.rate)||0,size:i.size||'h'})):[];return {...o,items,status,done:status==='done'||!!o.done,total:Number(o.total??items.reduce((s,i)=>s+i.qty*i.rate,0)),time:o.time||''}});
 let draftItems=safeLoad(DRAFT_KEY,[]);if(!Array.isArray(draftItems))draftItems=[];
-let activeTab='home',homeCategory='All',menuCategory='All',activeFilter='pending',activeHistoryFilter='done',sizeItemName='',matchContext=null,detailOrderId=null,detailEditing=false,pickerReturnDetailId=null;
+let activeTab='orders',homeCategory='All',menuCategory='All',activeFilter='pending',activeHistoryFilter='done',sizeItemName='',matchContext=null,detailOrderId=null,detailEditing=false,pickerReturnDetailId=null;
 let chosenByLine={home:{},modal:{},take:{}};
 function saveOrders(){try{localStorage.setItem(KEY,JSON.stringify(orders))}catch(e){showToast('Could not save in this browser')}}
 function saveDraft(){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draftItems))}catch(e){}}
@@ -670,7 +671,7 @@ $('customItemForm').addEventListener('submit',e=>{e.preventDefault();const name=
 $('menuSearch').addEventListener('input',renderMenu);$('detailMenuSearch').addEventListener('input',e=>renderDetailMenuPicker(e.target.value));
 $('orderSearch').addEventListener('input',renderOrders);$('historySearch').addEventListener('input',renderHistory);
 document.querySelectorAll('.nav-btn[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
-$('topSearch').onclick=()=>{setTab('orders',false);$('orderSearch').focus();$('ordersSection').scrollIntoView({behavior:'smooth',block:'start'})};$('topMore').onclick=()=>setTab('more');$('exportTop').onclick=exportOrders;$('exportHistory').onclick=exportOrders;$('exportMore').onclick=exportOrders;$('clearAllMore').onclick=clearAll;$('allHistory').onclick=()=>setTab('history');$('openMenuMore').onclick=()=>setTab('menu');
+$('topSearch').onclick=()=>{setTab('orders',false);$('orderSearch').focus();$('ordersSection').scrollIntoView({behavior:'smooth',block:'start'})};$('topMore').onclick=()=>setTab('more');$('exportTop').onclick=exportOrders;$('exportHistory').onclick=exportOrders;$('exportMore').onclick=exportOrders;$('clearAllMore').onclick=clearAll;$('allHistory').onclick=()=>setTab('history');$('openMenuMore').onclick=()=>setTab('menu');$('rsUpdateMenu').onclick=()=>setTab('menu');
 $('menuCategories').addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(b){menuCategory=b.dataset.category;renderMenu()}});
 $('menuPickerDialog').addEventListener('close',()=>{if(pickerReturnDetailId!=null&&getOrder(pickerReturnDetailId)&&!$('detailDialog').open){const id=pickerReturnDetailId;pickerReturnDetailId=null;openOrderDetail(id)}});
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.close).close()));
@@ -1894,6 +1895,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
   if(customerMode){document.body.classList.add('customer-mode');setTab('customer',false);$s('customerBack').hidden=true;document.title='Order Online · Charlie Chaap'}
   else{document.body.classList.remove('customer-mode')}
   updateStaffAuthUI();initializeSharedService();
+  if(!customerMode){try{setTab('orders',false)}catch(e){}}
   // Keep cart totals and availability fresh if staff modifies the menu or tab focus returns.
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderCustomerCart();renderCustomerMenu();updateCustomerOpenState()}});
 })();
