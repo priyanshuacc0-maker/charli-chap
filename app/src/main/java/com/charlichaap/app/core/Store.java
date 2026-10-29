@@ -165,24 +165,32 @@ public class Store {
         }
 
         JSONObject item = new JSONObject();
-        item.put("n", name);
-        item.put("c", category);
-        putNumber(item, "h", half);
-        putNumber(item, "f", full);
-        item.put("hLabel", cleanText(raw.optString("hLabel", ""), 24));
-        item.put("fLabel", cleanText(raw.optString("fLabel", ""), 24));
         JSONArray aliasArray = new JSONArray();
         for (String alias : uniqueAliases) aliasArray.put(alias);
-        item.put("a", aliasArray);
-        item.put("custom", raw.optBoolean("custom", false));
-        item.put("available", raw.has("available") ? raw.optBoolean("available", true) : true);
-        item.put("image", image);
+        try {
+            item.put("n", name);
+            item.put("c", category);
+            putNumber(item, "h", half);
+            putNumber(item, "f", full);
+            item.put("hLabel", cleanText(raw.optString("hLabel", ""), 24));
+            item.put("fLabel", cleanText(raw.optString("fLabel", ""), 24));
+            item.put("a", aliasArray);
+            item.put("custom", raw.optBoolean("custom", false));
+            item.put("available", raw.has("available") ? raw.optBoolean("available", true) : true);
+            item.put("image", image);
+        } catch (JSONException error) {
+            throw new ApiException(400, "That menu item could not be read.");
+        }
         return item;
     }
 
     private static void putNumber(JSONObject target, String key, Double value) throws ApiException {
-        if (value == null) target.put(key, JSONObject.NULL);
-        else target.put(key, value.doubleValue());
+        try {
+            if (value == null) target.put(key, JSONObject.NULL);
+            else target.put(key, value.doubleValue());
+        } catch (JSONException error) {
+            throw new ApiException(400, "That price could not be read.");
+        }
     }
 
     private static Object first(JSONObject raw, String primary, String fallback) {
@@ -232,9 +240,13 @@ public class Store {
             }
             delivery = value;
         }
-        config.put("isOpen", open);
-        config.put("taxPercent", tax);
-        config.put("deliveryFee", delivery);
+        try {
+            config.put("isOpen", open);
+            config.put("taxPercent", tax);
+            config.put("deliveryFee", delivery);
+        } catch (JSONException error) {
+            throw new ApiException(400, "Those settings could not be read.");
+        }
         return config;
     }
 
@@ -688,7 +700,12 @@ public class Store {
         long id = raw.optLong("id", -1);
         if (id < 1) throw new ApiException(400, "Backup contains an invalid order number.");
 
-        JSONArray rawItems = raw.getJSONArray("items");
+        JSONArray rawItems;
+        try {
+            rawItems = raw.getJSONArray("items");
+        } catch (JSONException error) {
+            throw new ApiException(400, "Backup contains an invalid order.");
+        }
         JSONArray items = new JSONArray();
         double subtotal = 0;
         for (int i = 0; i < rawItems.length(); i++) {

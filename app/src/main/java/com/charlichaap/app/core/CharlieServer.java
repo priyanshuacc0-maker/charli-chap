@@ -500,11 +500,7 @@ public class CharlieServer {
         if (body.length > limit) throw new ApiException(413, "Request body is too large.");
         String text = new String(body, StandardCharsets.UTF_8).trim();
         if (text.isEmpty()) {
-            try {
-                return new JSONObject();
-            } catch (JSONException e) {
-                throw new ApiException(400, "Request body must be valid JSON.");
-            }
+            return new JSONObject();
         }
         try {
             return new JSONObject(text);
