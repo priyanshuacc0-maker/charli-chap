@@ -289,6 +289,29 @@ button{touch-action:manipulation}
 #ccNewOrderBanner strong{display:block;font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #ccNewOrderBanner small{display:block;font-size:11.5px;color:#B9B9C4;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
+
+<style id="cc-menu-cards-style">
+#menuList.cc-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cc-card{background:var(--service-paper,#fff);border:1px solid var(--service-line,#ededf0);border-radius:16px;
+  overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
+.cc-card.is-off{opacity:.55}
+.cc-card-media{position:relative;width:100%;height:0;padding-top:72%;overflow:hidden;background:#e9e9ec}
+.cc-card-media img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+.cc-avail{position:absolute;left:8px;bottom:8px;border:0;border-radius:999px;padding:5px 9px;
+  font-size:9.5px;font-weight:800;letter-spacing:.2px;background:rgba(17,17,20,.72);color:#fff}
+.cc-avail.on{background:#1B7F4B}
+.cc-card-body{padding:9px 10px 10px;display:flex;flex-direction:column;gap:5px;flex:1}
+.cc-card-name{font-size:13px;font-weight:800;line-height:1.25;color:var(--service-ink,#111)}
+.cc-card-desc{font-size:10.5px;color:var(--service-muted,#7a7a85);line-height:1.3}
+.cc-card-prices{display:flex;gap:6px;margin-top:auto;padding-top:4px}
+.cc-price{flex:1;border:1.5px solid var(--service-line,#ededf0);border-radius:10px;padding:4px 3px;
+  display:flex;flex-direction:column;align-items:center;gap:1px;background:transparent;min-width:0}
+.cc-price i{font-style:normal;font-size:9px;font-weight:700;color:var(--service-muted,#7a7a85)}
+.cc-price b{font-size:12.5px;font-weight:800;color:var(--service-ink,#111)}
+.cc-view-toggle{border:1px solid var(--service-line,#ededf0);background:var(--service-soft,#f5f5f3);
+  border-radius:11px;padding:9px 11px;font-size:12px;font-weight:800;margin-right:8px;color:var(--service-ink,#111)}
+@media (max-width:360px){#menuList.cc-cards{gap:9px}.cc-card-name{font-size:12px}}
+</style>
 </head>
 <body data-tab="orders">
 <div id="app" class="app">
@@ -388,7 +411,7 @@ button{touch-action:manipulation}
   </section>
 
   <section class="view" id="menuView" data-view="menu">
-    <div class="page-head menu-page-head"><h1>Menu</h1><button class="black-btn custom-menu-trigger" id="addCustomMenuItem" type="button" aria-label="Open menu editor">✎ Edit menu</button></div>
+    <div class="page-head menu-page-head"><h1>Menu</h1><button class="cc-view-toggle" id="ccMenuViewToggle" type="button" aria-label="Switch between cards and list">List</button><button class="black-btn custom-menu-trigger" id="addCustomMenuItem" type="button" aria-label="Open menu editor">✎ Edit menu</button></div>
     <div class="searchbox"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="menuSearch" placeholder="Search menu items…" aria-label="Search menu"></div>
     <div id="menuCategories" class="category-row menu-filters"></div>
     <div id="menuList" class="menu-list"></div>
@@ -626,7 +649,7 @@ function attachFoodImageFallback(img,name){img.addEventListener('error',()=>{if(
 function fallbackPhoto(name){const n=normalize(name);if(/momo/.test(n))return IMG.momo;if(/tikka/.test(n))return IMG.tikka;if(/malai chaap/.test(n))return IMG.malai;return IMG.chaap}
 function categoryFor(item){if(item.c==='Chaap Dry')return'Chaap';if(item.c==='Beverages')return'Drinks';if(item.c==='Momo')return'Momos';return item.c}
 function categoryMatches(item,cat){return cat==='All'||categoryFor(item)===cat}
-function setTab(tab,scroll=true){activeTab=tab;document.body.dataset.tab=tab;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===tab));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='orders'){renderComposer('home');renderOrders();}if(tab==='take'){renderComposer('take');renderTakeCart();}if(tab==='menu'){renderMenu();if(window.__ccShared){fetch('/api/menu'+(window.__ccStaff?'?all=1':''),{credentials:'same-origin',cache:'no-store'}).then(r=>r.json()).then(d=>{if(d&&Array.isArray(d.items)&&d.items.length){const fresh=d.items.map(it=>({n:String(it.n||''),c:String(it.c||'Other'),h:it.h==null?null:Number(it.h),f:it.f==null?null:Number(it.f),hLabel:it.hLabel||'',fLabel:it.fLabel||'',a:Array.isArray(it.a)?it.a:[],available:it.available!==false,custom:!!it.custom,image:it.image||''})).filter(x=>x.n);menu.splice(0,menu.length,...fresh);try{renderMenu();}catch(_){}try{refreshMenuViews();}catch(_){}}}).catch(()=>{})}}if(tab==='history')renderHistory();if(tab==='more')renderMoreStats();renderDraftDock();if(scroll)window.scrollTo({top:0,behavior:'smooth'})}
+function setTab(tab,scroll=true){activeTab=tab;document.body.dataset.tab=tab;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===tab));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='orders'){renderComposer('home');renderOrders();}if(tab==='take'){renderComposer('take');renderTakeCart();}if(tab==='menu'){renderMenu();if(window.__ccShared){fetch('/api/menu'+(window.__ccStaff?'?all=1':''),{credentials:'same-origin',cache:'no-store'}).then(r=>r.json()).then(d=>{if(d&&Array.isArray(d.items)&&d.items.length){const fresh=d.items.map(it=>({n:String(it.n||''),c:String(it.c||'Other'),h:it.h==null?null:Number(it.h),f:it.f==null?null:Number(it.f),hLabel:it.hLabel||'',fLabel:it.fLabel||'',a:Array.isArray(it.a)?it.a:[],available:it.available!==false,custom:!!it.custom,desc:it.desc||'',image:it.image||''})).filter(x=>x.n);menu.splice(0,menu.length,...fresh);try{renderMenu();}catch(_){}try{refreshMenuViews();}catch(_){}}}).catch(()=>{})}}if(tab==='history')renderHistory();if(tab==='more')renderMoreStats();renderDraftDock();if(scroll)window.scrollTo({top:0,behavior:'smooth'})}
 function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove('show'),1900)}
 function getOrderTime(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
 function nextOrderId(){return orders.reduce((m,o)=>Math.max(m,Number(o.id)||0),0)+1}
@@ -652,7 +675,47 @@ function renderOrderCard(o){const card=document.createElement('article');card.cl
 function renderOrders(){$('activeCount').textContent=orders.length+' Orders';$('activeCount').className='status pending';renderOrderList('homeOrderList','all',$('orderSearch').value||'')}
 function advanceStatus(id){const o=orders.find(o=>String(o.id)===String(id));if(!o)return;const st=orderStatus(o);o.status=st==='pending'?'preparing':st==='preparing'?'done':'pending';o.done=o.status==='done';recalcOrder(o);saveOrders();renderOrders();renderHistory();renderMoreStats();if(detailOrderId===o.id)renderOrderDetail();showToast(o.status==='done'?'Order completed':o.status==='preparing'?'Order is preparing':'Order reopened')}
 function openQuickDialog(){setTab('take');setTimeout(()=>$('takeEntry').focus(),80)}
-function renderMenu(){renderCategoryPills('menuCategories',menuCategory,cat=>{menuCategory=cat;renderMenu()});const q=normalize($('menuSearch').value),host=$('menuList');host.innerHTML='';let items=menu.filter(item=>categoryMatches(item,menuCategory)&&(!q||normalize(item.n+' '+item.c+' '+(item.a||[]).join(' ')).includes(q)));if(!items.length){host.innerHTML='<div class="order-empty"><strong>No menu items found</strong><p>Try another spelling or category.</p></div>';return}let lastCat='';items.forEach(item=>{const cat=categoryFor(item);if(cat!==lastCat){const h=document.createElement('h2');h.className='group-heading';h.textContent=cat;host.append(h);lastCat=cat}const row=document.createElement('article');row.className='menu-row';const img=document.createElement('img');img.className='menu-thumb';img.src=photoFor(item.n);img.onerror=()=>{img.onerror=null;img.src=fallbackPhoto(item.n)};img.alt=item.n;img.loading='lazy';const main=document.createElement('div');main.className='menu-main';const tr=document.createElement('div');tr.className='menu-title-row';const title=document.createElement('div');title.className='menu-name';title.textContent=item.n;tr.append(title);const catText=document.createElement('div');catText.className='menu-cat';catText.textContent=item.c;const prices=document.createElement('div');prices.className='menu-prices';[['h',item.hLabel||'Half'],['f',item.fLabel||'Full']].forEach(([size,label])=>{if(rateFor(item,size)==null)return;const b=document.createElement('button');b.className='menu-price-btn';b.textContent=label+' · '+fmt(rateFor(item,size));b.onclick=()=>addToDraft(item,size);prices.append(b)});main.append(tr,catText,prices);row.append(img,main);host.append(row)})}
+
+function ccDefaultDesc(item){
+  const map={Tikka:'Tandoori smoked',Indian:'Comfort food',Momo:'Steamed & juicy',Chinese:'Wok tossed',Beverages:'Chilled',Gravy:'Rich gravy','Chaap Dry':'Charred & smoky'};
+  return map[item.c]||'Freshly prepared';
+}
+function ccMenuCard(item){
+  const card=document.createElement('article');
+  let avail=item.available!==false;
+  try{if(window.ccMenuManagement&&typeof window.ccMenuManagement.isAvailable==='function')avail=!!window.ccMenuManagement.isAvailable(item);}catch(_){}
+
+  card.className='cc-card'+(avail?'':' is-off');
+  const media=document.createElement('div');media.className='cc-card-media';
+  const img=document.createElement('img');img.src=photoFor(item.n);img.alt=item.n;img.loading='lazy';
+  img.onerror=()=>{img.onerror=null;img.src=fallbackPhoto(item.n)};
+  media.append(img);
+  const sw=document.createElement('button');sw.type='button';sw.className='cc-avail'+(avail?' on':'');
+  sw.textContent=avail?'Available':'Unavailable';
+  sw.onclick=(e)=>{e.stopPropagation();try{window.ccMenuManagement.setMenuAvailability(item.n,!avail)}catch(_){}renderMenu()};
+  media.append(sw);card.append(media);
+  const body=document.createElement('div');body.className='cc-card-body';
+  const name=document.createElement('div');name.className='cc-card-name';name.textContent=item.n;
+  const desc=document.createElement('div');desc.className='cc-card-desc';
+  desc.textContent=(item.desc&&String(item.desc).trim())||ccDefaultDesc(item);
+  body.append(name,desc);
+  const row=document.createElement('div');row.className='cc-card-prices';
+  [['h',item.hLabel||'Half'],['f',item.fLabel||'Full']].forEach(([size,label])=>{
+    const rate=rateFor(item,size);if(rate==null)return;
+    const b=document.createElement('button');b.type='button';b.className='cc-price';
+    const i1=document.createElement('i');i1.textContent=label;
+    const b1=document.createElement('b');b1.textContent=fmt(rate);
+    b.append(i1,b1);
+    b.onclick=(e)=>{e.stopPropagation();addToDraft(item,size)};
+    row.append(b);
+  });
+  body.append(row);card.append(body);
+  card.onclick=()=>{try{(window.ccOpenEditor||function(){})(item)}catch(_){}};
+  return card;
+}
+function renderMenu(){renderCategoryPills('menuCategories',menuCategory,cat=>{menuCategory=cat;renderMenu()});const q=normalize($('menuSearch').value),host=$('menuList');host.innerHTML='';const ccMode=window.ccMenuMode||(localStorage.getItem('cc_menu_view')==='list'?'list':'cards');const ccToggle=document.getElementById('ccMenuViewToggle');if(ccToggle)ccToggle.textContent=ccMode==='cards'?'☰ List':'▦ Cards';host.classList.toggle('cc-cards',ccMode==='cards');let items=menu.filter(item=>categoryMatches(item,menuCategory)&&(!q||normalize(item.n+' '+item.c+' '+(item.a||[]).join(' ')).includes(q)));if(!items.length){host.innerHTML='<div class="order-empty"><strong>No menu items found</strong><p>Try another spelling or category.</p></div>';return}if(ccMode==='cards'){items.forEach(item=>host.append(ccMenuCard(item)));return}let lastCat='';items.forEach(item=>{const cat=categoryFor(item);if(cat!==lastCat){const h=document.createElement('h2');h.className='group-heading';h.textContent=cat;host.append(h);lastCat=cat}const row=document.createElement('article');row.className='menu-row';const img=document.createElement('img');img.className='menu-thumb';img.src=photoFor(item.n);img.onerror=()=>{img.onerror=null;img.src=fallbackPhoto(item.n)};img.alt=item.n;img.loading='lazy';const main=document.createElement('div');main.className='menu-main';const tr=document.createElement('div');tr.className='menu-title-row';const title=document.createElement('div');title.className='menu-name';title.textContent=item.n;tr.append(title);const catText=document.createElement('div');catText.className='menu-cat';catText.textContent=item.c;const prices=document.createElement('div');prices.className='menu-prices';[['h',item.hLabel||'Half'],['f',item.fLabel||'Full']].forEach(([size,label])=>{if(rateFor(item,size)==null)return;const b=document.createElement('button');b.className='menu-price-btn';b.textContent=label+' · '+fmt(rateFor(item,size));b.onclick=()=>addToDraft(item,size);prices.append(b)});main.append(tr,catText,prices);row.append(img,main);host.append(row)})}
+window.ccMenuMode=window.ccMenuMode||null;
+(function(){const t=document.getElementById('ccMenuViewToggle');if(t){t.onclick=()=>{window.ccMenuMode=(window.ccMenuMode==='list')?'cards':'list';try{localStorage.setItem('cc_menu_view',window.ccMenuMode)}catch(_){}renderMenu();};}})();
 function renderHistory(){const total=orders.reduce((s,o)=>s+o.total,0);$('historyCount').textContent=orders.length;$('todayCount').textContent=orders.length;$('completedTotal').textContent=fmt(total);renderOrderList('historyList','all',$('historySearch').value||'')}
 function renderMoreStats(){/* all summary numbers remain in the working views */}
 function openDraft(){renderDraftDialog();$('draftDialog').showModal()}
@@ -814,7 +877,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
       localStorage.setItem(MENU_STATE_KEY, JSON.stringify(menuManagement));
       try {
         if (window.__ccShared && window.__ccStaff) {
-          const pushItems = menu.map(item => ({ n: item.n, c: item.c || 'Other', h: item.h == null ? null : Number(item.h), f: item.f == null ? null : Number(item.f), hLabel: item.hLabel || '', fLabel: item.fLabel || '', a: Array.isArray(item.a) ? item.a : [item.n], custom: !!item.custom, available: item.available !== false, image: item.image || '' }));
+          const pushItems = menu.map(item => ({ n: item.n, c: item.c || 'Other', h: item.h == null ? null : Number(item.h), f: item.f == null ? null : Number(item.f), hLabel: item.hLabel || '', fLabel: item.fLabel || '', a: Array.isArray(item.a) ? item.a : [item.n], custom: !!item.custom, available: item.available !== false, desc: item.desc || '', image: item.image || '' }));
           clearTimeout(window.__ccMenuPushTimer);
           window.__ccMenuPushTimer = setTimeout(() => {
             fetch('/api/menu', { method: 'PUT', credentials: 'same-origin', cache: 'no-store', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: pushItems }) }).catch(() => {});
@@ -1292,7 +1355,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
     <div class="editor-field"><label for="menuEditorName">Item name</label><input id="menuEditorName" class="editor-input" maxlength="80" required placeholder="e.g. Special Afghani Chaap"></div>
     <div class="editor-field"><label for="menuEditorCategory">Category</label><input id="menuEditorCategory" class="editor-input" maxlength="50" required list="menuEditorCategoryOptions" placeholder="e.g. Chaap Dry"><datalist id="menuEditorCategoryOptions"></datalist></div>
     <div class="editor-price-grid"><div class="editor-field"><label for="menuEditorHalf">Half price (₹)</label><input id="menuEditorHalf" class="editor-input" type="number" min="0" max="1000000" step="0.5" placeholder="Optional"></div><div class="editor-field"><label for="menuEditorFull">Full price (₹)</label><input id="menuEditorFull" class="editor-input" type="number" min="0" max="1000000" step="0.5" placeholder="Optional"></div></div>
-    <div class="editor-field"><label for="menuEditorAliases">Search names / spelling variations</label><textarea id="menuEditorAliases" class="editor-textarea" placeholder="Separate aliases with commas"></textarea></div>
+    <div class="editor-field"><label for="menuEditorDesc">Description (shown to customers)</label><input id="menuEditorDesc" class="editor-input" maxlength="120" placeholder="Creamy &amp; flavourful"></div> <div class="editor-field"><label for="menuEditorAliases">Search names / spelling variations</label><textarea id="menuEditorAliases" class="editor-textarea" placeholder="Separate aliases with commas"></textarea></div>
     <p class="editor-help">Enter at least one valid price. Leave the image blank to use the app's matching default food photo. Saved menu changes apply to future orders; past orders retain their recorded name and price.</p>
     <div class="editor-form-actions"><button class="editor-cancel-btn" id="menuEditorCancel" type="button">Cancel</button><button class="editor-save-btn" id="menuEditorSave" type="submit">Save changes</button></div>
     <div class="editor-form-footer"><span class="editor-help" id="menuEditorItemKind">Menu item</span><button class="editor-delete-btn" id="menuEditorDelete" type="button" hidden>Delete item</button></div>
@@ -1350,6 +1413,10 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
     let items = menu.filter(item=>categoryMatches(item,menuCategory)&&(!search||keyOf(item.n+' '+item.c+' '+(item.a||[]).join(' ')).includes(search)));
     items.sort((a,b)=>String(a.c||'').localeCompare(String(b.c||''))||String(a.n).localeCompare(String(b.n)));
     if(!items.length){host.innerHTML='<div class="order-empty"><strong>No menu items found</strong><p>Try another spelling or category.</p></div>';return;}
+    const ccMode=(window.ccMenuMode||(localStorage.getItem('cc_menu_view')==='list'?'list':'cards'));
+    const ccToggle=document.getElementById('ccMenuViewToggle');
+    if(ccMode==='cards'){if(ccToggle)ccToggle.textContent='☰ List';host.classList.add('cc-cards');items.forEach(item=>host.append(ccMenuCard(item)));return;}
+    if(ccToggle)ccToggle.textContent='▦ Cards';host.classList.remove('cc-cards');
     let last='';
     items.forEach(item=>{
       const available=itemAvailable(item), category=categoryFor(item);
@@ -1407,7 +1474,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
   function openEditor(item=null){
     editingItem=item; addingNew=!item; editingImage=item&&item.image?item.image:'';
     $id('menuItemEditorTitle').textContent=item?'Edit menu item':'Add menu item';
-    $id('menuEditorName').value=item?item.n:'';
+    $id('menuEditorName').value=item?item.n:''; $id('menuEditorDesc').value=item?(item.desc||''):'';
     $id('menuEditorCategory').value=item?item.c:(allCategories()[0]||'Other');
     $id('menuEditorHalf').value=item&&item.h!=null?item.h:'';
     $id('menuEditorFull').value=item&&item.f!=null?item.f:'';
@@ -1420,6 +1487,8 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
     setEditorImagePreview(editingImage||oldPhotoFor(item?item.n:'chaap'));
     $id('menuItemEditorDialog').showModal();
   }
+try{window.ccOpenEditor=openEditor;}catch(_){}
+
 
   function saveAllMenuData(){
     const keys=[CUSTOM_KEY,MENU_STATE_KEY,OVERRIDES_KEY];const previous={};
@@ -1428,7 +1497,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
       const next={};
       menu.filter(item=>!item.custom).forEach(item=>{
         const base=String(item._baseKey||item.n);
-        next[keyOf(base)]={n:item.n,c:item.c,h:item.h==null?null:Number(item.h),f:item.f==null?null:Number(item.f),a:Array.isArray(item.a)?item.a:[item.n.toLowerCase()],image:item.image||''};
+        next[keyOf(base)]={n:item.n,c:item.c,h:item.h==null?null:Number(item.h),f:item.f==null?null:Number(item.f),a:Array.isArray(item.a)?item.a:[item.n.toLowerCase()],desc:item.desc||'',image:item.image||''};
       });
       localStorage.setItem(OVERRIDES_KEY,JSON.stringify(next));overrides=next;return true;
     }catch(error){keys.forEach(k=>{try{if(previous[k]===null||previous[k]===undefined)localStorage.removeItem(k);else localStorage.setItem(k,previous[k]);}catch(_){}});return false;}
@@ -1489,7 +1558,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
     const duplicate=menu.find(item=>keyOf(item.n)===keyOf(name)&&item!==editingItem);
     if(duplicate){showToast('Another item already uses that name');return;}
     const aliases=[name,...$id('menuEditorAliases').value.split(',').map(v=>v.trim()).filter(Boolean)];
-    const uniqueAliases=[...new Map(aliases.map(v=>[keyOf(v),v])).values()];
+    const uniqueAliases=[...new Map(aliases.map(v=>[keyOf(v),v])).values()]; const descText=$id('menuEditorDesc').value.trim();
     const oldName=editingItem?editingItem.n:'';
     const previousMenu=menu.slice();
     const previousItemSnapshots=new Map(previousMenu.map(entry=>[entry,{...entry,a:Array.isArray(entry.a)?entry.a.slice():[]} ]));
@@ -1499,7 +1568,7 @@ addEventListener('resize',chk);if(vv)vv.addEventListener('resize',chk)})();
     let item=editingItem;
     let previousFlags=null;
     if(!item){previousFlags=window.ccMenuManagement.clearMenuFlags(name);item={n:name,c:category,h:null,f:null,a:[],custom:true,available:true};menu.push(item);}
-    item.n=name;item.c=category;item.h=halfText===''?null:Number(halfText);item.f=fullText===''?null:Number(fullText);item.a=uniqueAliases;
+    item.n=name;item.c=category;item.h=halfText===''?null:Number(halfText);item.f=fullText===''?null:Number(fullText);item.a=uniqueAliases;item.desc=descText;
     item.image=editingImage||'';
     if(!item.custom&&!item._baseKey)item._baseKey=oldName||name;
     if(!saveAllMenuData()){
@@ -1839,7 +1908,7 @@ async function pullRemoteOrders(silent=false){
   async function publishCurrentMenu(){
     if(!sharedServiceActive){showServiceToast('Start the included Node.js server to publish a shared menu');return}
     if(!staffAuthenticated){showServiceToast('Sign in as staff before publishing the menu');return}
-    const items=menu.map(item=>({n:item.n,c:item.c||'Other',h:item.h==null?null:Number(item.h),f:item.f==null?null:Number(item.f),hLabel:item.hLabel||'',fLabel:item.fLabel||'',a:Array.isArray(item.a)?item.a:[item.n],custom:!!item.custom,available:!!itemAvailable(item),image:item.image||''}));
+    const items=menu.map(item=>({n:item.n,c:item.c||'Other',h:item.h==null?null:Number(item.h),f:item.f==null?null:Number(item.f),hLabel:item.hLabel||'',fLabel:item.fLabel||'',a:Array.isArray(item.a)?item.a:[item.n],custom:!!item.custom,available:!!itemAvailable(item),desc:item.desc||'',image:item.image||''}));
     const b=$s('servicePublishMenu');b.disabled=true;b.textContent='Publishing…';
     try{await apiFetch('/api/menu',{method:'PUT',body:JSON.stringify({items})});await pullRemoteMenu(true);showServiceToast('Menu published to customer devices')}catch(error){showServiceToast(error.message||'Could not publish the menu')}finally{b.disabled=!staffAuthenticated;b.textContent='Publish current menu to customers'}
   }
