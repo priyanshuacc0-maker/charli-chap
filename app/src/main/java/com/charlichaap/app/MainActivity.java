@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
 
         root.addView(gap(20));
         root.addView(sectionTitle("Settings"));
-        root.addView(actionButton("Staff password", this::askPassword));
+        root.addView(actionButton("Staff password", () -> askPassword(null)));
         root.addView(actionButton("Keep running in background", this::askBatteryExemption));
         root.addView(actionButton("Start automatically after reboot", this::toggleAutoStart));
         root.addView(actionButton("Connect to another order desk", this::askRemoteAddress));
