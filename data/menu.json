@@ -1,0 +1,910 @@
+[
+  {
+    "n": "Malai Paneer Tikka",
+    "c": "Tikka",
+    "h": 160,
+    "f": 300,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "malai paneer tikka",
+      "malai paneer tikka"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Achari Paneer Tikka",
+    "c": "Tikka",
+    "h": 150,
+    "f": 280,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "achari paneer tikka",
+      "achari tikka"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Haryali Paneer Tikka",
+    "c": "Tikka",
+    "h": 150,
+    "f": 280,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "hariyali paneer tikka",
+      "hariali paneer tikka"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Rajma Chawal",
+    "c": "Indian",
+    "h": 50,
+    "f": 80,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "rajma chawal",
+      "rajma rice"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Kadi Chawal",
+    "c": "Indian",
+    "h": 50,
+    "f": 80,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "kadhi chawal",
+      "kadi chawal",
+      "kari chawal"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Dal Chawal",
+    "c": "Indian",
+    "h": 50,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "dal chawal",
+      "daal chawal"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Veg Momos",
+    "c": "Momo",
+    "h": 50,
+    "f": 90,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "veg momos",
+      "vegetable momos",
+      "veggie momo"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Veg Kurkure Momos",
+    "c": "Momo",
+    "h": 80,
+    "f": 150,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "veg kurkure momos",
+      "kurkure veg momo"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Veg Afghani Momos",
+    "c": "Momo",
+    "h": 80,
+    "f": 150,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "veg afghani momos",
+      "afghani veg momos"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Paneer Momos",
+    "c": "Momo",
+    "h": 70,
+    "f": 130,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "paneer momos",
+      "panner momos"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Paneer Kurkure Momos",
+    "c": "Momo",
+    "h": 90,
+    "f": 170,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "paneer kurkure momos",
+      "panner kurkure momo"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Paneer Afghani Momos",
+    "c": "Momo",
+    "h": 90,
+    "f": 170,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "paneer afghani momos",
+      "panner afghani momo"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Cheese Kurkure Momos",
+    "c": "Momo",
+    "h": 100,
+    "f": 180,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "cheese kurkure momos"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Cheese Afghani Momos",
+    "c": "Momo",
+    "h": 100,
+    "f": 180,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "cheese afghani momos"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Crispy Corn",
+    "c": "Chinese",
+    "h": 110,
+    "f": 200,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "crispy corn",
+      "crispy con"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Noodles",
+    "c": "Chinese",
+    "h": 60,
+    "f": 110,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "noodles",
+      "noodle"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Hakka Noodles",
+    "c": "Chinese",
+    "h": 90,
+    "f": 170,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "hakka noodles",
+      "haka noodles"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Singapore Noodles",
+    "c": "Chinese",
+    "h": 90,
+    "f": 170,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "singapore noodles",
+      "singapuri noodles"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Manchurian",
+    "c": "Chinese",
+    "h": 100,
+    "f": 180,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "manchurian",
+      "manchurian dry"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Chilly Paneer",
+    "c": "Chinese",
+    "h": 110,
+    "f": 210,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "chilli paneer",
+      "chilly paneer",
+      "chili paneer"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Fried Rice",
+    "c": "Chinese",
+    "h": 90,
+    "f": 170,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "fried rice",
+      "fried rise"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Macaroni",
+    "c": "Chinese",
+    "h": 80,
+    "f": 150,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "macaroni",
+      "macroni",
+      "macaroni pasta"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Spring Roll",
+    "c": "Chinese",
+    "h": 60,
+    "f": 120,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "spring roll",
+      "spring role"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Kurkure Spring Roll",
+    "c": "Chinese",
+    "h": 80,
+    "f": 150,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "kurkure spring roll"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Kabab",
+    "c": "Chinese",
+    "h": 60,
+    "f": 120,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "kabab",
+      "kebab"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Hara Bhara Kabab",
+    "c": "Chinese",
+    "h": 70,
+    "f": 130,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "hara bhara kabab",
+      "hara bhara kebab"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Honey Chilli Potato",
+    "c": "Chinese",
+    "h": 110,
+    "f": 200,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "honey chilli potato",
+      "honey chili potato",
+      "honey chilly potato"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Chilli Potato",
+    "c": "Chinese",
+    "h": 100,
+    "f": 180,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "chilli potato",
+      "chilly potato"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Fries (Peri Peri / Crispy)",
+    "c": "Chinese",
+    "h": 80,
+    "f": 160,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "fries",
+      "peri peri fries",
+      "crispy fries",
+      "french fries"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Afghani Chaap",
+    "c": "Chaap Dry",
+    "h": 120,
+    "f": 220,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "afghani chaap",
+      "afgani chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Malai Chaap Special",
+    "c": "Chaap Dry",
+    "h": 140,
+    "f": 240,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "malai chaap special",
+      "malai chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Tandoori Chaap",
+    "c": "Chaap Dry",
+    "h": 120,
+    "f": 220,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "tandoori chaap",
+      "tandoor chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Achari Chaap",
+    "c": "Chaap Dry",
+    "h": 120,
+    "f": 220,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "achari chaap",
+      "achari chap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Haryali Chaap",
+    "c": "Chaap Dry",
+    "h": 120,
+    "f": 220,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "haryali chaap",
+      "hariyali chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "KKTG Chaap",
+    "c": "Chaap Dry",
+    "h": 120,
+    "f": 220,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "kktg chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Lemon Chaap",
+    "c": "Chaap Dry",
+    "h": 120,
+    "f": 220,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "lemon chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Eggs (Kurkure)",
+    "c": "Chaap Dry",
+    "h": 150,
+    "f": 280,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "eggs kurkure",
+      "egg kurkure"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Shahi Chaap",
+    "c": "Gravy",
+    "h": 150,
+    "f": 260,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "shahi chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Changezi Chaap",
+    "c": "Gravy",
+    "h": 150,
+    "f": 260,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "changezi chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Keema Chaap",
+    "c": "Gravy",
+    "h": 140,
+    "f": 250,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "keema chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Butter Masala Chaap",
+    "c": "Gravy",
+    "h": 150,
+    "f": 260,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "butter masala chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Amritsari Chaap",
+    "c": "Gravy",
+    "h": 150,
+    "f": 260,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "amritsari chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Kali Mirchi Chaap",
+    "c": "Gravy",
+    "h": 140,
+    "f": 250,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "kali mirchi chaap",
+      "kali mirch chaap"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Shahi Paneer",
+    "c": "Gravy",
+    "h": 170,
+    "f": 300,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "shahi paneer"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Changezi Paneer",
+    "c": "Gravy",
+    "h": 180,
+    "f": 320,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "changezi paneer"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Butter Paneer Masala",
+    "c": "Gravy",
+    "h": 180,
+    "f": 320,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "butter paneer masala",
+      "paneer butter masala"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Kadayat Panner",
+    "c": "Gravy",
+    "h": 180,
+    "f": 320,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "kadayat panner",
+      "kadai paneer",
+      "kadhai paneer"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Blue Lagoon Mocktail",
+    "c": "Beverages",
+    "h": 99,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "blue lagoon",
+      "blue lagoon mocktail"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Green Mint",
+    "c": "Beverages",
+    "h": 99,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "green mint",
+      "mint drink"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Mint Mojito",
+    "c": "Beverages",
+    "h": 99,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "mint mojito",
+      "mojito"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Cold Coffee",
+    "c": "Beverages",
+    "h": 99,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "cold coffee"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Oreo Shake",
+    "c": "Beverages",
+    "h": 99,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "oreo shake"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Strawberry Shake",
+    "c": "Beverages",
+    "h": 99,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "strawberry shake"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Watermelon",
+    "c": "Beverages",
+    "h": 99,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "watermelon",
+      "watermelon juice"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Cold Drink",
+    "c": "Beverages",
+    "h": 50,
+    "f": null,
+    "hLabel": "",
+    "fLabel": "",
+    "a": [
+      "cold drink",
+      "soft drink"
+    ],
+    "custom": false,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Thums Up Big",
+    "c": "Beverages",
+    "h": 70,
+    "f": null,
+    "hLabel": "Big",
+    "fLabel": "",
+    "a": [
+      "thums up big",
+      "thumbs up big",
+      "thumsup big",
+      "thums up large",
+      "big thums up",
+      "70 rupees thums up big"
+    ],
+    "custom": true,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Thums Up Medium",
+    "c": "Beverages",
+    "h": 50,
+    "f": null,
+    "hLabel": "Medium",
+    "fLabel": "",
+    "a": [
+      "thums up medium",
+      "thumbs up medium",
+      "thumsup medium",
+      "medium thums up",
+      "50 rupees thums up medium"
+    ],
+    "custom": true,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Thums Up Small",
+    "c": "Beverages",
+    "h": 20,
+    "f": null,
+    "hLabel": "Small",
+    "fLabel": "",
+    "a": [
+      "thums up small",
+      "thumbs up small",
+      "thumsup small",
+      "small thums up",
+      "20 rupees thums up small"
+    ],
+    "custom": true,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Sprite Small",
+    "c": "Beverages",
+    "h": 20,
+    "f": null,
+    "hLabel": "Small",
+    "fLabel": "",
+    "a": [
+      "sprite small",
+      "small sprite",
+      "sprite",
+      "20 rupees sprite small"
+    ],
+    "custom": true,
+    "available": true,
+    "image": ""
+  },
+  {
+    "n": "Water Bottle",
+    "c": "Beverages",
+    "h": 20,
+    "f": null,
+    "hLabel": "Bottle",
+    "fLabel": "",
+    "a": [
+      "water bottle",
+      "bottled water",
+      "mineral water",
+      "water",
+      "20 rs water bottle"
+    ],
+    "custom": true,
+    "available": true,
+    "image": ""
+  }
+]
