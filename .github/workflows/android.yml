@@ -6,7 +6,7 @@ on:
     paths:
       - 'app/**'
       - 'web/**'
-      - 'public/index.html'
+      - 'public/**'
       - 'build.gradle'
       - 'settings.gradle'
       - 'gradle.properties'
