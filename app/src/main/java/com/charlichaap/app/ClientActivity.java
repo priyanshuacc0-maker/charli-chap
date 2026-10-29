@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +40,7 @@ public class ClientActivity extends Activity {
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
@@ -76,6 +77,14 @@ public class ClientActivity extends Activity {
         String url = getIntent() == null ? null : getIntent().getStringExtra(EXTRA_URL);
         if (url == null || url.isEmpty()) {
             url = "http://127.0.0.1:" + ServerService.PORT + "/customer";
+        }
+        // Cache-bust so a freshly installed APK never shows the previous page.
+        try {
+            long version = Build.VERSION.SDK_INT >= 28
+                    ? getPackageManager().getPackageInfo(getPackageName(), 0).getLongVersionCode()
+                    : getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            url = url + (url.contains("?") ? "&" : "?") + "v=" + version;
+        } catch (Exception ignored) {
         }
         // The customer page draws its own header, so drop the native action bar there.
         try {

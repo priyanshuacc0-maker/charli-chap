@@ -229,6 +229,10 @@ public class CharlieServer {
             payload.put("service", "Charlie Chaap Service API");
             payload.put("version", 1);
             payload.put("status", "ok");
+            payload.put("port", port);
+            JSONArray addresses = new JSONArray();
+            for (String address : localAddresses()) addresses.put(address);
+            payload.put("addresses", addresses);
             return Response.json(200, payload);
         }
 
@@ -414,6 +418,40 @@ public class CharlieServer {
         }
 
         throw new ApiException(404, "Route not found.");
+    }
+
+    /** LAN IPv4 addresses this server can be reached on, best candidate first. */
+    public static java.util.List<String> localAddresses() {
+        java.util.List<String> found = new java.util.ArrayList<>();
+        try {
+            java.util.Enumeration<java.net.NetworkInterface> interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                java.net.NetworkInterface network = interfaces.nextElement();
+                if (!network.isUp() || network.isLoopback()) continue;
+                java.util.Enumeration<java.net.InetAddress> addresses = network.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    java.net.InetAddress address = addresses.nextElement();
+                    if (!(address instanceof java.net.Inet4Address) || address.isLoopbackAddress()) continue;
+                    String host = address.getHostAddress();
+                    if (host == null || host.startsWith("169.254.")) continue;
+                    found.add(host);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        found.sort((a, b) -> {
+            int ra = rank(a), rb = rank(b);
+            return Integer.compare(ra, rb);
+        });
+        return found;
+    }
+
+    private static int rank(String address) {
+        if (address.startsWith("192.168.43.")) return 0;
+        if (address.startsWith("192.168.")) return 1;
+        if (address.startsWith("10.")) return 2;
+        if (address.startsWith("172.")) return 3;
+        return 4;
     }
 
     /** The customer-facing page sits next to index.html; fall back to index.html if absent. */
@@ -648,7 +686,8 @@ public class CharlieServer {
         long length = response.file.length();
         BufferedOutputStream buffered = new BufferedOutputStream(out);
         Map<String, String> merged = new HashMap<>(response.headers);
-        merged.put("Cache-Control", "no-cache");
+        merged.put("Cache-Control", "no-store, must-revalidate");
+        merged.put("Pragma", "no-cache");
         writeHeaders(buffered, 200, merged, "text/html; charset=utf-8", length);
         FileInputStream in = new FileInputStream(response.file);
         try {

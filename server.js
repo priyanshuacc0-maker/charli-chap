@@ -192,8 +192,18 @@ function sendJson(res, status, data, headers = {}) {
   });
   res.end(body);
 }
+function localAddresses() {
+  const found = [];
+  for (const entries of Object.values(os.networkInterfaces())) {
+    for (const info of entries || []) {
+      if (info && info.family === 'IPv4' && !info.internal && !String(info.address).startsWith('169.254.')) found.push(info.address);
+    }
+  }
+  const rank = (a) => a.startsWith('192.168.43.') ? 0 : a.startsWith('192.168.') ? 1 : a.startsWith('10.') ? 2 : a.startsWith('172.') ? 3 : 4;
+  return found.sort((a, b) => rank(a) - rank(b));
+}
 function sendHtml(res, file) {
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin' });
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, must-revalidate', 'Pragma': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin' });
   fs.createReadStream(file).pipe(res);
 }
 function sendText(res, status, value) {
@@ -301,7 +311,7 @@ const server = http.createServer(async (req, res) => {
 
   try {
     if (req.method === 'GET' && pathname === '/api/health') {
-      return sendJson(res, 200, { service: 'Charlie Chaap Service API', version: 1, status: 'ok' });
+      return sendJson(res, 200, { service: 'Charlie Chaap Service API', version: 1, status: 'ok', port: PORT, addresses: localAddresses() });
     }
     if (req.method === 'GET' && pathname === '/api/public-config') {
       return sendJson(res, 200, { config: state.config, updatedAt: state.updatedAt });
