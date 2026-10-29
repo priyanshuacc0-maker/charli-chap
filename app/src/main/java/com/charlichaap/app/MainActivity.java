@@ -236,8 +236,7 @@ public class MainActivity extends Activity {
             statusText.setTextColor(Color.parseColor("#166534"));
             urlText.setText(url);
             urlText.setVisibility(View.VISIBLE);
-            hintText.setText("Customers and staff join this phone's Wi-Fi or hotspot, then open this address. "
-                    + "Keep the phone on charge.");
+            hintText.setVisibility(View.GONE);
             startButton.setText("Stop order desk");
             startButton.setBackgroundColor(Color.parseColor("#7F1D1D"));
         } else {
@@ -245,9 +244,12 @@ public class MainActivity extends Activity {
             statusText.setTextColor(Color.parseColor("#7F1D1D"));
             urlText.setVisibility(View.GONE);
             String error = ServerService.lastError;
-            hintText.setText(error != null && !error.isEmpty()
-                    ? error
-                    : "Tap Start to let phones on your Wi-Fi open the menu and place orders.");
+            if (error != null && !error.isEmpty()) {
+                hintText.setText(error);
+                hintText.setVisibility(View.VISIBLE);
+            } else {
+                hintText.setVisibility(View.GONE);
+            }
             startButton.setText("Start order desk");
             startButton.setBackgroundColor(Color.parseColor("#C2410C"));
         }
