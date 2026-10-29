@@ -45,7 +45,8 @@ input,textarea,select{font-family:inherit}
 
 /* ---------------- header ---------------- */
 .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
-.brand h1{margin:0;font-size:28px;line-height:1.06;font-weight:800;letter-spacing:-.7px}
+.brand{min-width:0}
+.brand h1{margin:0;font-size:28px;line-height:1.06;font-weight:800;letter-spacing:-.7px;white-space:nowrap}
 .brand p{margin:6px 0 0;font-size:13.5px;color:var(--muted);font-weight:500;letter-spacing:.1px}
 .brand p span{margin:0 6px;opacity:.7}
 .top-actions{display:flex;gap:8px;flex:0 0 auto;padding-top:2px}
@@ -57,25 +58,6 @@ input,textarea,select{font-family:inherit}
 .round-btn.on{background:var(--dark)}
 .round-btn.on svg{stroke:#fff}
 .round-btn svg{width:20px;height:20px;stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-
-/* ---------------- hero ---------------- */
-.hero{position:relative;border-radius:20px;overflow:hidden;height:212px;box-shadow:var(--shadow-card);background:#241812}
-.hero-slide{position:absolute;inset:0;opacity:0;transition:opacity .6s ease}
-.hero-slide.on{opacity:1}
-.hero-slide img{width:100%;height:100%;object-fit:cover;display:block}
-.hero-shade{
-  position:absolute;inset:0;
-  background:linear-gradient(100deg,rgba(14,9,6,.94) 6%,rgba(14,9,6,.78) 40%,rgba(14,9,6,.12) 74%,rgba(14,9,6,.05) 100%);
-}
-.hero-body{position:absolute;inset:0;padding:18px 18px 16px;display:flex;flex-direction:column;justify-content:center;color:#fff}
-.hero-eyebrow{font-size:10.5px;letter-spacing:2.6px;font-weight:700;color:#EAC98D;margin-bottom:8px}
-.hero-title{font-family:"Playfair Display",Georgia,serif;font-weight:700;font-size:33px;line-height:1.04;letter-spacing:-.3px;margin:0}
-.hero-swipe{margin:9px 0 10px}
-.hero-meta{font-size:12px;color:#F0DFC6;font-weight:500;letter-spacing:.2px}
-.hero-meta span{margin:0 5px;opacity:.75}
-.hero-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;gap:6px;justify-content:center}
-.hero-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.42);display:block;transition:.25s}
-.hero-dots i.on{background:var(--gold);width:7px;height:7px}
 
 /* ---------------- search ---------------- */
 .search{
@@ -118,13 +100,13 @@ input,textarea,select{font-family:inherit}
 .sort .chev{width:11px;height:11px}
 
 /* ---------------- grid ---------------- */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-items:start}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-items:stretch}
 .card{
   background:var(--card);border-radius:var(--radius-card);overflow:hidden;box-shadow:var(--shadow-card);
   display:flex;flex-direction:column
 }
-.card-img{position:relative;aspect-ratio:1/.86;background:#E9E9EC;overflow:hidden}
-.card-img img{width:100%;height:100%;object-fit:cover;display:block}
+.card-img{position:relative;width:100%;height:0;padding-top:76%;background:#E9E9EC;overflow:hidden}
+.card-img img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
 .card-img .soldout{
   position:absolute;inset:0;background:rgba(20,16,14,.55);color:#fff;display:grid;place-items:center;
   font-size:11.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase
@@ -173,11 +155,11 @@ input,textarea,select{font-family:inherit}
   background:var(--red);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center
 }
 .cart-mid{flex:1;min-width:0;color:#fff}
-.cart-mid strong{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.2px}
-.cart-mid span{display:block;font-size:11.5px;color:#A5A5B0;font-weight:500;margin-top:2px}
+.cart-mid strong{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-mid span{display:block;font-size:11.5px;color:#A5A5B0;font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cart-sep{width:1px;align-self:stretch;background:rgba(255,255,255,.13);margin:4px 2px}
 .checkout{
-  flex:0 0 auto;height:50px;padding:0 20px;border-radius:15px;background:var(--gold);color:var(--gold-ink);
+  flex:0 0 auto;height:50px;padding:0 16px;white-space:nowrap;border-radius:15px;background:var(--gold);color:var(--gold-ink);
   font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.2px
 }
 .checkout svg{width:16px;height:16px;stroke:var(--gold-ink);stroke-width:2.3;fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -270,11 +252,28 @@ input,textarea,select{font-family:inherit}
 
 .footnote{text-align:center;font-size:11px;color:#A6A6B0;padding:18px 0 4px;font-weight:500}
 @media (max-width:419px){.meta-extra{display:none}}
-@media (max-width:359px){
-  .brand h1{font-size:24px}
-  .hero-title{font-size:28px}
-  .hero{height:188px}
-  .card-name{font-size:13.5px}
+@media (max-width:410px){
+  .brand h1{font-size:23px;letter-spacing:-.9px}
+  .top{gap:6px}
+  .top-actions{gap:6px}
+  .round-btn{width:39px;height:39px}
+  .round-btn svg{width:18px;height:18px}
+  .card-body{padding:9px 9px 10px;gap:6px}
+  .card-name{font-size:13px;line-height:1.2;letter-spacing:-.3px}
+  .card-desc{font-size:10.5px}
+  .price{padding:4px 3px 5px;border-radius:10px}
+  .price b{font-size:13px}
+  .price i{font-size:9px}
+  .add{width:37px;height:37px}
+  .add svg{width:16px;height:16px}
+  .price-row{gap:6px}
+  .cartbar-in{gap:9px;padding:9px 10px}
+  .bag{width:42px;height:42px;border-radius:12px}
+  .bag svg{width:20px;height:20px}
+  .cart-mid strong{font-size:13px}
+  .cart-mid span{font-size:10.5px}
+  .checkout{height:46px;padding:0 13px;font-size:13px;border-radius:13px}
+  .checkout svg{width:14px;height:14px}
 }
 </style>
 </head>
@@ -296,22 +295,6 @@ input,textarea,select{font-family:inherit}
         <svg viewBox="0 0 24 24" style="fill:#111114;stroke:none"><circle cx="12" cy="5" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="12" cy="19" r="1.7"></circle></svg>
       </button>
     </div>
-  </div>
-
-  <div class="hero" id="hero">
-    <div class="hero-slide" data-i="0"><img alt=""></div>
-    <div class="hero-slide" data-i="1"><img alt=""></div>
-    <div class="hero-slide" data-i="2"><img alt=""></div>
-    <div class="hero-shade"></div>
-    <div class="hero-body">
-      <div class="hero-eyebrow">CHARLIE CHAAP</div>
-      <h2 class="hero-title">Bold Flavours<br>Great Food</h2>
-      <svg class="hero-swipe" width="118" height="12" viewBox="0 0 118 12" fill="none" aria-hidden="true">
-        <path d="M2 8.6C18 4.2 38 2.6 58 3.4c20 .8 40 3.2 58 2.2" stroke="#E8B45E" stroke-width="4.4" stroke-linecap="round"/>
-      </svg>
-      <div class="hero-meta">Tandoori<span>·</span>Tikka<span>·</span>Momos<span>·</span>More</div>
-    </div>
-    <div class="hero-dots"><i class="on"></i><i></i><i></i></div>
   </div>
 
   <div class="notice" id="closedNotice">We are not accepting new orders right now. Please ask our staff.</div>
@@ -964,23 +947,8 @@ function wireUi() {
   window.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSheets(); });
 }
 
-function startHero() {
-  const photos = [IMG.hero, IMG.chaap, IMG.momo];
-  const slides = document.querySelectorAll('.hero-slide img');
-  const dots = document.querySelectorAll('.hero-dots i');
-  slides.forEach((img, i) => { img.src = photos[i % photos.length]; });
-  document.querySelector('.hero-slide').classList.add('on');
-  let index = 0;
-  setInterval(() => {
-    index = (index + 1) % slides.length;
-    document.querySelectorAll('.hero-slide').forEach((el, i) => el.classList.toggle('on', i === index));
-    dots.forEach((dot, i) => dot.classList.toggle('on', i === index));
-  }, 5200);
-}
-
 loadLocal();
 wireUi();
-startHero();
 loadMenu();
 </script>
 </body>

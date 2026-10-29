@@ -67,6 +67,11 @@ public class ClientActivity extends Activity {
         if (url == null || url.isEmpty()) {
             url = "http://127.0.0.1:" + ServerService.PORT + "/customer";
         }
+        // The customer page draws its own header, so drop the native action bar there.
+        try {
+            if (url.contains("/customer") && getActionBar() != null) getActionBar().hide();
+        } catch (Exception ignored) {
+        }
         web.loadUrl(url);
     }
 
