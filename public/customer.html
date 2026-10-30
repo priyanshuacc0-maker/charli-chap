@@ -354,6 +354,7 @@ body.has-banner{padding-top:86px}
   </div>
 
   <div class="grid" id="grid"></div>
+  <div class="footnote" id="footnote">Prices in ₹ · Prepared fresh to order</div>
 </div>
 
 <div class="cartbar" id="cartbar">
@@ -368,7 +369,7 @@ body.has-banner{padding-top:86px}
     </button>
     <div class="cart-sep"></div>
     <button class="checkout" id="goCheckout">
-      View order
+      Place order
       <svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"></path></svg>
     </button>
   </div>
@@ -553,7 +554,7 @@ function saveCart() { try { localStorage.setItem(STORE_CART, JSON.stringify(stat
 function saveFavs() { try { localStorage.setItem(STORE_FAV, JSON.stringify(state.favs)); } catch (e) {} }
 
 async function api(path, options) {
-  const res = await fetch(path, Object.assign({ cache: 'no-store', headers: { 'Content-Type': 'application/json' } }, options || {}));
+  const res = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, options || {}));
   let data = {};
   try { data = await res.json(); } catch (e) { data = {}; }
   if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
@@ -629,6 +630,13 @@ function renderChips() {
   });
 }
 
+function sortPrice(item) {
+  const h = priceOf(item, 'h'), f = priceOf(item, 'f');
+  if (h !== null && f !== null) return Math.min(h, f);
+  if (h !== null) return h;
+  if (f !== null) return f;
+  return 0;
+}
 function visibleItems() {
   const q = norm(state.query);
   let list = state.items.filter((item) => {
@@ -638,8 +646,8 @@ function visibleItems() {
     const haystack = [item.n, item.c].concat(item.a || []).map(norm).join(' ');
     return haystack.indexOf(q) >= 0;
   });
-  if (state.sort === 'price-asc') list = list.slice().sort((a, b) => (priceOf(a, chosenSize(a)) || 0) - (priceOf(b, chosenSize(b)) || 0));
-  if (state.sort === 'price-desc') list = list.slice().sort((a, b) => (priceOf(b, chosenSize(b)) || 0) - (priceOf(a, chosenSize(a)) || 0));
+  if (state.sort === 'price-asc') list = list.slice().sort((a, b) => sortPrice(a) - sortPrice(b));
+  if (state.sort === 'price-desc') list = list.slice().sort((a, b) => sortPrice(b) - sortPrice(a));
   if (state.sort === 'az') list = list.slice().sort((a, b) => a.n.localeCompare(b.n));
   return list;
 }
@@ -673,7 +681,7 @@ function renderGrid() {
   }
   $('grid').innerHTML = list.map((item) => {
     const photo = item.image && /^https?:|^data:image/.test(item.image) ? item.image : photoFor(item.n);
-    const desc = (item.desc && String(item.desc).trim()) || DESCRIPTIONS[item.n] || 'Freshly prepared';
+    const desc = DESCRIPTIONS[item.n] || 'Freshly prepared';
     const soldOut = item.available === false;
     const fav = state.favs.indexOf(item.n) >= 0;
     const sizes = availableSizes(item);
@@ -696,7 +704,8 @@ function renderGrid() {
   }).join('');
 
   $('grid').querySelectorAll('.price').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (event) => {
+      if (event) event.stopPropagation();
       if (btn.disabled) return;
       state.sizes[btn.dataset.name] = btn.dataset.size;
       renderGrid();
@@ -945,7 +954,7 @@ function wireUi() {
   });
   $('viewCart').addEventListener('click', () => { renderCartSheet(); openSheet('cartSheet'); });
   $('cartToCheckout').addEventListener('click', openTablePrompt);
-  $('goCheckout').addEventListener('click', () => { renderCartSheet(); openSheet('cartSheet'); });
+  $('goCheckout').addEventListener('click', openTablePrompt);
   $('placeOrder').addEventListener('click', placeOrder);
   $('obClose').addEventListener('click', hideBanner);
   $('sheetBg').addEventListener('click', closeSheets);
