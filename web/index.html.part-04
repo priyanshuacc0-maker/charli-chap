@@ -2071,4 +2071,62 @@ async function pullRemoteOrders(silent=false){
 })();
 </script>
 
+
+<div class="cc-gate" id="ccGate" aria-hidden="true">
+  <div class="cc-gate-card">
+    <div class="cc-gate-mark">CC</div>
+    <h2>Staff sign in</h2>
+    <input id="ccGatePassword" type="password" autocomplete="current-password" placeholder="Staff password" aria-label="Staff password">
+    <div class="cc-gate-error" id="ccGateError"></div>
+    <button class="cc-gate-btn" id="ccGateBtn" type="button">Sign in</button>
+  </div>
+</div>
+<style id="cc-gate-style">
+.cc-gate{position:fixed;inset:0;z-index:99990;background:var(--n-bg,#f2f2f2);display:flex;align-items:center;
+  justify-content:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .18s ease}
+.cc-gate.on{opacity:1;visibility:visible}
+.cc-gate-card{width:100%;max-width:340px;background:var(--service-paper,#fff);border-radius:22px;padding:26px 22px 22px;
+  box-shadow:0 18px 44px rgba(17,17,20,.14);text-align:center}
+.cc-gate-mark{width:58px;height:58px;border-radius:18px;background:#111114;color:#fff;font-weight:800;font-size:19px;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 14px;letter-spacing:.5px}
+.cc-gate-card h2{margin:0 0 18px;font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--service-ink,#111)}
+#ccGatePassword{width:100%;height:52px;border-radius:14px;border:1.5px solid var(--service-line,#ededf0);
+  background:var(--service-soft,#f7f7f9);padding:0 14px;font-size:15px;color:var(--service-ink,#111);outline:none}
+#ccGatePassword:focus{border-color:#1B7F4B;background:var(--service-paper,#fff)}
+.cc-gate-error{display:none;margin-top:10px;font-size:12.5px;font-weight:700;color:#A3242A}
+.cc-gate-error.on{display:block}
+.cc-gate-btn{width:100%;height:52px;margin-top:16px;border:0;border-radius:14px;background:#111114;color:#fff;
+  font-size:15px;font-weight:800;letter-spacing:-.2px}
+.cc-gate-btn:disabled{opacity:.6}
+</style>
+<script id="cc-gate-logic">
+(function(){
+  var gate=document.getElementById('ccGate');
+  if(!gate) return;
+  var input=document.getElementById('ccGatePassword');
+  var btn=document.getElementById('ccGateBtn');
+  var err=document.getElementById('ccGateError');
+  var busy=false;
+  function show(){ if(gate.classList.contains('on'))return; gate.classList.add('on'); gate.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; setTimeout(function(){try{input.focus()}catch(e){}},180); }
+  function hide(){ gate.classList.remove('on'); gate.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+  function signIn(){
+    if(busy)return;
+    var pw=(input.value||'').trim();
+    if(!pw){ err.textContent='Enter the staff password'; err.classList.add('on'); return; }
+    busy=true; btn.disabled=true; btn.textContent='Signing in…'; err.classList.remove('on');
+    fetch('/api/auth/login',{method:'POST',credentials:'same-origin',cache:'no-store',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})})
+      .then(function(r){ return r.json().catch(function(){return{}}).then(function(d){ if(!r.ok) throw new Error(d.error||'Incorrect password'); return d; }); })
+      .then(function(){ window.__ccStaff=true; hide(); location.reload(); })
+      .catch(function(e){ err.textContent=e.message||'Could not sign in'; err.classList.add('on'); btn.disabled=false; btn.textContent='Sign in'; busy=false; });
+  }
+  btn.addEventListener('click',signIn);
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); signIn(); } });
+  setInterval(function(){
+    if(window.__ccShared && !window.__ccStaff){ show(); }
+    else if(window.__ccStaff){ hide(); }
+  },700);
+})();
+</script>
+
 </body></html>
